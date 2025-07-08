@@ -17,7 +17,7 @@ impl AddAssign<u32> for ProcessingState {
     /// This adds a number to the enum. If the enum is idle, it becomes Processing(x) where x is the number added. If it is already Processing(n) it becomes Processing(n+x)
     fn add_assign(&mut self, rhs: u32) {
         match self {
-            // If currently Idle, you could decide that adding a number transitions to Processing.
+            // If currently Idle, adding n makes a new Processing(n) enum
             ProcessingState::Idle => {
                 *self = ProcessingState::Processing(rhs);
             },
