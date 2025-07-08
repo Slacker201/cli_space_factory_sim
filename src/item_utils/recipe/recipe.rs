@@ -22,12 +22,12 @@ impl Recipe {
         Recipe { input_items: Vec::new(), output_items: Vec::new(), power_draw: 1, heat_produced: 1, processing_time: 1}
     }
     /// Returns a vector containing references to all input items
-    pub fn input_items(&self) -> Vec<&Item> {
-        self.input_items.iter().collect()
+    pub fn input_items(&self) -> &[Item] {
+        &self.input_items
     }
     /// Returns a vector containing references to all output items
-    pub fn output_items(&self) -> Vec<&Item> {
-        self.output_items.iter().collect()
+    pub fn output_items(&self) -> &[Item] {
+        &self.output_items
     }
     /// Returns the power draw
     pub fn power_draw(&self) -> u32 {
@@ -83,7 +83,7 @@ impl Recipe {
     /// Returns the output items as a transport order with saturate inventory set to true
     pub fn output_items_as_transport_order(&self) -> TransportOrder {
         let mut order = TransportOrder::new();
-        for item in &self.input_items {
+        for item in &self.output_items {
             if item.count() > 0 {
                 order.items_mut().push(item.clone());
             }

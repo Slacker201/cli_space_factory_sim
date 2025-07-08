@@ -3,15 +3,15 @@
 
 #[cfg(test)]
 mod recipe_tests {
-    use crate::{entities::entity_components::inventory::inventory::Inventory, item_utils::{item::{item::Item, item_builder::ItemBuilder}, recipe::recipe::Recipe}};
+    use crate::{entities::entity_components::inventory::inventory::Inventory, item_utils::{item::item_builder::ItemBuilder, recipe::recipe::Recipe}};
 
 
     #[test]
     fn default_values() {
         let recipe = Recipe::new();
         
-        assert_eq!(recipe.input_items(), Vec::<&Item>::new());
-        assert_eq!(recipe.output_items(), Vec::<&Item>::new());
+        assert_eq!(recipe.input_items(), Vec::new());
+        assert_eq!(recipe.output_items(), Vec::new());
         assert_eq!(recipe.power_draw(), 1);
         assert_eq!(recipe.heat_produced(), 1);
     }
@@ -20,13 +20,13 @@ mod recipe_tests {
     fn set_get_input_items() {
         let mut recipe = Recipe::new();
         recipe.set_input_items([ItemBuilder::new().set_count(5).set_id(1).build(), ItemBuilder::new().set_count(4).set_id(2).build()].to_vec());
-        assert_eq!(recipe.input_items(), [&ItemBuilder::new().set_count(5).set_id(1).build(), &ItemBuilder::new().set_count(4).set_id(2).build()].to_vec());
+        assert_eq!(recipe.input_items(), [ItemBuilder::new().set_count(5).set_id(1).build(), ItemBuilder::new().set_count(4).set_id(2).build()].to_vec());
     }
     #[test]
     fn set_get_output_items() {
         let mut recipe = Recipe::new();
         recipe.set_output_items([ItemBuilder::new().set_count(5).set_id(1).build(), ItemBuilder::new().set_count(4).set_id(2).build()].to_vec());
-        assert_eq!(recipe.output_items(), [&ItemBuilder::new().set_count(5).set_id(1).build(), &ItemBuilder::new().set_count(4).set_id(2).build()].to_vec());
+        assert_eq!(recipe.output_items(), [ItemBuilder::new().set_count(5).set_id(1).build(), ItemBuilder::new().set_count(4).set_id(2).build()].to_vec());
     }
 
     #[test]
