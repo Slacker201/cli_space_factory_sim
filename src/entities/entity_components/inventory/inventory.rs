@@ -12,7 +12,7 @@ pub struct Inventory {
     /// The item hashmap which stores items indexed by their unique item id
     items: HashMap<u64, Item>,
     /// The max weight capacity of the inventory. Currently unimplemented
-    max_capacity: u64,
+    max_capacity: u128,
     /// Indicates whether the items have changed, used to avoid unnecessary recalculations of capacity.
     items_changed: bool,
     /// Cached total item count
@@ -30,7 +30,7 @@ impl Inventory {
         &self.items
     }
     /// Returns the max capacity
-    pub fn max_capacity(&self) -> u64 {
+    pub fn max_capacity(&self) -> u128 {
         self.max_capacity
     }
     /// Adds an item to the hashmap, adding to the item count if the item is already in the map
@@ -80,7 +80,7 @@ impl Inventory {
     }
     /// Sets the maximum capacity.
     /// No checks are conducted
-    pub fn set_max_capacity(&mut self, new_capacity: u64) {
+    pub fn set_max_capacity(&mut self, new_capacity: u128) {
         self.max_capacity = new_capacity;
     }
     /// Returns a vector of references to all items in the inventory
