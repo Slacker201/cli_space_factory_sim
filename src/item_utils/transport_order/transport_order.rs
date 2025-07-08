@@ -1,7 +1,7 @@
 use crate::item_utils::item::item::Item;
 
 
-
+#[derive(Debug)]
 /// A transport order representing a list of items and a boolean
 pub struct TransportOrder {
     /// The items to move
