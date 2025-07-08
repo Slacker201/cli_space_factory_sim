@@ -94,7 +94,7 @@ impl Assembler {
         if let ProcessingState::Processing(count) = self.processing_state {
             self.processing_state += 1; // Increase the processing count
             if count+1 >= self.recipe.processing_time() {
-                self.output_inventory.add_multiple(self.recipe.output_items().to_vec()); // Add items to the output inventory
+                self.output_inventory.add_multiple(self.recipe.output_items().into_iter().cloned().collect()); // Add items to the output inventory
                 self.processing_inventory.clear();
                 self.set_processing_state(ProcessingState::Idle); // Reset to idle
             }
@@ -104,7 +104,7 @@ impl Assembler {
         }
 
         if self.recipe.can_be_produced(&self.input_inventory) {
-            self.input_inventory.move_items_to(self.recipe.as_transport_order(), &mut self.processing_inventory); // Move items from the input inventory to the processing inventory
+            self.input_inventory.move_items_to(self.recipe.output_items_as_transport_order(), &mut self.processing_inventory); // Move items from the input inventory to the processing inventory
             self.processing_state = ProcessingState::Processing(1) // Start the processing
         }
     }
