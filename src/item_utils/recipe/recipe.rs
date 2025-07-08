@@ -70,7 +70,7 @@ impl Recipe {
         }
         true
     }
-
+    
     pub fn as_transport_order(&self) -> TransportOrder {
         let mut order = TransportOrder::new();
         for item in &self.input_items {
@@ -80,9 +80,4 @@ impl Recipe {
         }
         order
     }
-
 }
-
-
-
-
