@@ -122,35 +122,111 @@ mod recipe_tests {
     }
 
     #[test]
-    fn as_transport_order_basic_values() {
+    fn input_items_as_transport_order_multiple_values_mixed_zero_and_non_zero() {
+        let mut recipe = Recipe::new();
+        recipe.set_input_items([
+            ItemBuilder::new().set_count(20).set_id(1).build(),
+            ItemBuilder::new().set_count(0).set_id(2).build(),
+        ].to_vec());
+        let t_order = recipe.input_items_as_transport_order();
+
+        assert_eq!(
+            t_order.items(),
+            &[ItemBuilder::new().set_count(20).set_id(1).build()].to_vec()
+        );
+    }
+
+    #[test]
+    fn input_items_as_transport_order_basic_values() {
         let mut recipe = Recipe::new();
         recipe.set_input_items([ItemBuilder::new().set_count(20).set_id(1).build()].to_vec());
-        let t_order = recipe.output_items_as_transport_order();
+        let t_order = recipe.input_items_as_transport_order();
 
-        assert_eq!(t_order.items(), &[ItemBuilder::new().set_count(20).set_id(1).build()].to_vec())
+        assert_eq!(
+            t_order.items(),
+            &[ItemBuilder::new().set_count(20).set_id(1).build()].to_vec()
+        );
     }
+
     #[test]
-    fn as_transport_order_zero_count() {
+    fn input_items_as_transport_order_zero_count() {
         let mut recipe = Recipe::new();
         recipe.set_input_items([ItemBuilder::new().set_count(0).set_id(1).build()].to_vec());
-        let t_order = recipe.output_items_as_transport_order();
+        let t_order = recipe.input_items_as_transport_order();
 
-        assert_eq!(t_order.items(), &[].to_vec())
+        assert_eq!(t_order.items(), &[].to_vec());
     }
+
     #[test]
-    fn as_transport_order_multiple_nonzero_values() {
+    fn input_items_as_transport_order_multiple_nonzero_values() {
         let mut recipe = Recipe::new();
-        recipe.set_input_items([ItemBuilder::new().set_count(20).set_id(1).build(), ItemBuilder::new().set_count(20).set_id(2).build()].to_vec());
-        let t_order = recipe.output_items_as_transport_order();
+        recipe.set_input_items([
+            ItemBuilder::new().set_count(20).set_id(1).build(),
+            ItemBuilder::new().set_count(20).set_id(2).build(),
+        ].to_vec());
+        let t_order = recipe.input_items_as_transport_order();
 
-        assert_eq!(t_order.items(), &[ItemBuilder::new().set_count(20).set_id(1).build(), ItemBuilder::new().set_count(20).set_id(2).build()].to_vec())
+        assert_eq!(
+            t_order.items(),
+            &[
+                ItemBuilder::new().set_count(20).set_id(1).build(),
+                ItemBuilder::new().set_count(20).set_id(2).build(),
+            ].to_vec()
+        );
     }
+
     #[test]
-    fn as_transport_order_multiple_values_mixed_zero_and_non_zero () {
+    fn output_items_as_transport_order_multiple_values_mixed_zero_and_non_zero() {
         let mut recipe = Recipe::new();
-        recipe.set_input_items([ItemBuilder::new().set_count(20).set_id(1).build(), ItemBuilder::new().set_count(0).set_id(2).build()].to_vec());
+        recipe.set_output_items([
+            ItemBuilder::new().set_count(20).set_id(1).build(),
+            ItemBuilder::new().set_count(0).set_id(2).build(),
+        ].to_vec());
         let t_order = recipe.output_items_as_transport_order();
 
-        assert_eq!(t_order.items(), &[ItemBuilder::new().set_count(20).set_id(1).build()].to_vec())
+        assert_eq!(
+            t_order.items(),
+            &[ItemBuilder::new().set_count(20).set_id(1).build()].to_vec()
+        );
     }
+
+    #[test]
+    fn output_items_as_transport_order_basic_values() {
+        let mut recipe = Recipe::new();
+        recipe.set_output_items([ItemBuilder::new().set_count(20).set_id(1).build()].to_vec());
+        let t_order = recipe.output_items_as_transport_order();
+
+        assert_eq!(
+            t_order.items(),
+            &[ItemBuilder::new().set_count(20).set_id(1).build()].to_vec()
+        );
+    }
+
+    #[test]
+    fn output_items_as_transport_order_zero_count() {
+        let mut recipe = Recipe::new();
+        recipe.set_output_items([ItemBuilder::new().set_count(0).set_id(1).build()].to_vec());
+        let t_order = recipe.output_items_as_transport_order();
+
+        assert_eq!(t_order.items(), &[].to_vec());
+    }
+
+    #[test]
+    fn output_items_as_transport_order_multiple_nonzero_values() {
+        let mut recipe = Recipe::new();
+        recipe.set_output_items([
+            ItemBuilder::new().set_count(20).set_id(1).build(),
+            ItemBuilder::new().set_count(20).set_id(2).build(),
+        ].to_vec());
+        let t_order = recipe.output_items_as_transport_order();
+
+        assert_eq!(
+            t_order.items(),
+            &[
+                ItemBuilder::new().set_count(20).set_id(1).build(),
+                ItemBuilder::new().set_count(20).set_id(2).build(),
+            ].to_vec()
+        );
+    }
+    
 }
