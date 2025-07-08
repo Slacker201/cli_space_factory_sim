@@ -90,4 +90,14 @@ impl Recipe {
         }
         order
     }
+    /// Returns the input items as a transport order with saturate inventory set to true
+    pub fn input_items_as_transport_order(&self) -> TransportOrder {
+        let mut order = TransportOrder::new();
+        for item in &self.input_items {
+            if item.count() > 0 {
+                order.items_mut().push(item.clone());
+            }
+        }
+        order
+    }
 }
