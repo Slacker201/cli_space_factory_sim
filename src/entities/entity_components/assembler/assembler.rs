@@ -90,7 +90,6 @@ impl Assembler {
     /// Otherwise, checks if the recipe can be produced and, if so, starts the processing cycle.
     /// This function starts producing a recipe the same tick the previous recipe finished, assuming it has enough items.
     pub fn tick(&mut self) {
-
         if let ProcessingState::Processing(count) = self.processing_state {
             self.processing_state += 1; // Increase the processing count
             if count+1 >= self.recipe.processing_time() {
@@ -104,8 +103,11 @@ impl Assembler {
         }
 
         if self.recipe.can_be_produced(&self.input_inventory) {
-            self.input_inventory.move_items_to(self.recipe.output_items_as_transport_order(), &mut self.processing_inventory); // Move items from the input inventory to the processing inventory
+            self.input_inventory.move_items_to(self.recipe.input_items_as_transport_order(), &mut self.processing_inventory); // Move items from the input inventory to the processing inventory
             self.processing_state = ProcessingState::Processing(1) // Start the processing
+        }
+        else {
+            println!("{:?}", self.input_inventory)
         }
     }
 }

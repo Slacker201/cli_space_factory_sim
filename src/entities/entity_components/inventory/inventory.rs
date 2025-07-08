@@ -1,8 +1,8 @@
 #![allow(dead_code)]
 
-use std::collections::HashMap;
+use std::{collections::HashMap, env::VarsOs};
 
-use crate::item_utils::{item::item::Item, transport_order::transport_order::TransportOrder};
+use crate::item_utils::{item::{item::Item, item_builder::ItemBuilder}, transport_order::transport_order::TransportOrder};
 
 
 
@@ -72,12 +72,38 @@ impl Inventory {
     }
     /// Removes an item from the inventory and returns it if found
     pub fn remove(&mut self, item: &Item) -> Option<Item> {
-        self.items.remove(&item.id())
+        let found = self.get_mut(item.id())?;
+        
+        if found.count() > item.count() {
+            found.set_count(found.count() - item.count());
+            Some(item.clone())
+        } else {
+            let returner = found.clone();
+            self.items.remove(&item.id());
+            Some(returner)
+        }
     }
+
     /// Removes an item by id, and returns it if found
     pub fn remove_by_id(&mut self, id: u64) -> Option<Item> {
         self.items.remove(&id)
     }
+    /// Removes a specific amount of item, according to the provided id and count
+    pub fn remove_by_id_and_count(&mut self, id: u64, count: u128) -> Option<Item> {
+        match self.get_mut(id) {
+            Some(var) if var.count() > count => {
+                var.set_count(var.count() - count);
+                Some(ItemBuilder::new().set_count(count).set_id(id).build())
+            }
+            Some(_) => {
+                // Item count is less than or equal to requested removal count
+                let removed = self.remove_by_id(id);
+                removed
+            }
+            None => None,
+        }
+    }
+
     /// Sets the maximum capacity.
     /// No checks are conducted
     pub fn set_max_capacity(&mut self, new_capacity: u128) {
@@ -94,26 +120,32 @@ impl Inventory {
 
     /// Moves items from itself into another inventory according to a transport order
     pub fn move_items_to(&mut self, t_order: TransportOrder, tar_inv: &mut Inventory) {
-        println!("Currently adding these items: {:?}", t_order.items());
+
         for item in t_order.items() {
-            println!("Adding item: {:?}", item);
-            let item_id;
-            if let Some(src_item) = self.get_mut(item.id()) {
-                item_id = src_item.id();
-                println!("Adding item1")
-            } else {
-                println!("Source inventory does not contain {}", item.name().unwrap_or_else(|| "Invalid Item"));
-                continue
-            }
-            if let Some(removed) = self.remove_by_id(item_id) {
-                println!("5 Adding item: {:?}", removed);
-                tar_inv.add(removed);
-                println!("Tar inv: {:?}", tar_inv)
-            } else {
-                println!("Failed to add item")
+
+            // Check if the source inventory contains the item
+            match self.get_mut(item.id()) {
+                Some(_) => {
+                    let item_id = item.id();
+                    let item_count = item.count();
+
+                    // Attempt to remove the specified count of the item from source inventory
+                    match self.remove_by_id_and_count(item_id, item_count) {
+                        Some(removed_item) => {
+                            tar_inv.add(removed_item);
+                        }
+                        None => {
+                        }
+                    }
+                }
+                None => {
+                    continue;
+                }
             }
         }
+        println!("Finished moving items.");
     }
+
     /// Adds multiple items to the inventory
     pub fn add_multiple(&mut self, items: Vec<Item>) {
         for item in items {
