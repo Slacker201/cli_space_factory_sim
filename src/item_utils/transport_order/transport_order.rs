@@ -24,6 +24,10 @@ impl TransportOrder {
     pub fn items_mut(&mut self) -> &mut Vec<Item> {
         &mut self.items
     }
+    /// Returns whether the order should saturate the inventory on overflow
+    pub fn saturate_inv(&self) -> bool {
+        self.saturate_inv
+    }
     /// Setter for the item vector. Requires passing ownership to the transport order
     pub fn set_items(&mut self, new_items: Vec<Item>) {
         self.items = new_items;
@@ -35,6 +39,9 @@ impl TransportOrder {
             arr.push(item.clone());
         }
         self.items = arr;
+    }
+    pub fn set_saturate_inv(&mut self, new_saturate_inv: bool) {
+        self.saturate_inv = new_saturate_inv;
     }
 }
 
