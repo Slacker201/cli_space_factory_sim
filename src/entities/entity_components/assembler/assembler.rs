@@ -106,8 +106,5 @@ impl Assembler {
             self.input_inventory.move_items_to(self.recipe.input_items_as_transport_order(), &mut self.processing_inventory); // Move items from the input inventory to the processing inventory
             self.processing_state = ProcessingState::Processing(1) // Start the processing
         }
-        else {
-            println!("{:?}", self.input_inventory)
-        }
     }
 }
