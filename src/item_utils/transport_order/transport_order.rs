@@ -40,6 +40,7 @@ impl TransportOrder {
         }
         self.items = arr;
     }
+    /// Setter for saturate inventory
     pub fn set_saturate_inv(&mut self, new_saturate_inv: bool) {
         self.saturate_inv = new_saturate_inv;
     }
