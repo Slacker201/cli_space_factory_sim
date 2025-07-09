@@ -1,12 +1,12 @@
 #![allow(dead_code)]
 
-use std::{collections::HashMap, env::VarsOs};
+use std::collections::HashMap;
 
 use crate::item_utils::{item::{item::Item, item_builder::ItemBuilder}, transport_order::transport_order::TransportOrder};
 
 
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 /// Represents an inventory that holds items. Used by objects to manage their item collections.
 pub struct Inventory {
     /// The item hashmap which stores items indexed by their unique item id
@@ -143,7 +143,6 @@ impl Inventory {
                 }
             }
         }
-        println!("Finished moving items.");
     }
 
     /// Adds multiple items to the inventory
