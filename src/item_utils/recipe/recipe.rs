@@ -1,7 +1,7 @@
 use crate::{entities::entity_components::inventory::inventory::Inventory, item_utils::{item::item::Item, transport_order::transport_order::TransportOrder}};
 
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 /// Represents a recipe that holds input items, output items, power cost, processing time, and heat produced
 pub struct Recipe {
     /// A vector containing the items required to make the recipe
