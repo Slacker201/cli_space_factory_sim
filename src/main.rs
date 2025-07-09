@@ -8,6 +8,7 @@ use crate::{entities::{entity_components::inventory::inventory::Inventory, facto
 
 mod item_utils;
 mod entities;
+mod command_line_interface;
 pub fn main() {
     let mut fac = Factory::new();
     let mut inv = Inventory::new();
@@ -56,4 +57,6 @@ pub fn main() {
     fac.move_items_from_input_to(&mut inv, t_order);
     fac.move_items_from_output_to(&mut inv, t_order2);
     fac.tick();
+
+    command_line_interface::command_dispatcher::parse_and_dispatch_command("add_recipe");
 }
