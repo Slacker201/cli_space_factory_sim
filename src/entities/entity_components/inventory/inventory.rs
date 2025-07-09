@@ -151,6 +151,11 @@ impl Inventory {
             self.add(item);
         }
     }
+    
+    /// Returns true if the inventory is empty
+    pub fn is_empty(&self) -> bool {
+        self.items.is_empty()
+    }
     /// Clears the inventory of all items
     pub fn clear(&mut self) {
         self.items.clear();
