@@ -86,25 +86,48 @@ impl Assembler {
 
     /// Processes a single tick for the assembler.
     ///
-    /// If enough time has passed, completes the current recipe and moves output items to the output inventory.
-    /// Otherwise, checks if the recipe can be produced and, if so, starts the processing cycle.
-    /// This function starts producing a recipe the same tick the previous recipe finished, assuming it has enough items.
+    /// This function produces n tick recipes every n ticks
     pub fn tick(&mut self) {
-        if let ProcessingState::Processing(count) = self.processing_state {
-            self.processing_state += 1; // Increase the processing count
-            if count+1 >= self.recipe.processing_time() {
-                self.output_inventory.add_multiple(self.recipe.output_items().into_iter().cloned().collect()); // Add items to the output inventory
-                self.processing_inventory.clear();
-                self.set_processing_state(ProcessingState::Idle); // Reset to idle
-            }
-            else {
-                return; // We are still processing, return to skip the relatively costly can be produced check
-            }
-        }
-
-        if self.recipe.can_be_produced(&self.input_inventory) {
-            self.input_inventory.move_items_to(self.recipe.input_items_as_transport_order(), &mut self.processing_inventory); // Move items from the input inventory to the processing inventory
-            self.processing_state = ProcessingState::Processing(1) // Start the processing
+        match self.processing_state() {
+            ProcessingState::Idle => {
+                // Check if we can produce the recipe
+                if self.recipe.can_be_produced(&self.input_inventory) {
+                    self.start_processing();
+                    if self.recipe().processing_time() <= 1 {
+                    self.end_processing();
+                }
+                }
+            },
+            ProcessingState::Processing(val) => {
+                if val + 1 >= self.recipe.processing_time() {
+                    self.end_processing();
+                    // Check again if can start next processing
+                    if self.recipe.can_be_produced(&self.input_inventory) {
+                        self.start_processing();
+                    }
+                } else {
+                    self.set_processing_state(ProcessingState::Processing(val + 1));
+                    return; // Skip expensive checks while still processing
+                }
+            },
         }
     }
+
+    // helper for tick func
+    fn start_processing(&mut self) {
+        self.input_inventory.move_items_to(
+            self.recipe.input_items_as_transport_order(),
+            &mut self.processing_inventory,
+        );
+        self.set_processing_state(ProcessingState::Processing(1));
+    }
+
+    // another helper for tick func
+    fn end_processing(&mut self) {
+        // Finished processing
+        self.output_inventory.add_multiple(self.recipe.output_items().into_iter().cloned().collect());
+        self.processing_inventory.clear();
+        self.set_processing_state(ProcessingState::Idle);
+    }
+
 }
