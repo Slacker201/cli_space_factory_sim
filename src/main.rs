@@ -22,6 +22,7 @@ pub fn main() {
     let assembler = fac.get_assembler_mut();
     i_b5.build().name();
     t_order.saturate_inv();
+    t_order.set_saturate_inv(true);
     t_order.set_items(Vec::from([i_b.build()]));
     t_order.set_items_from_refs(Vec::from([&i_b2.build()]));
     rec.can_be_produced(&inv);
