@@ -4,6 +4,8 @@ use crate::{entities::entity_components::inventory::inventory::Inventory, item_u
 #[derive(Debug, PartialEq, Clone)]
 /// Represents a recipe that holds input items, output items, power cost, processing time, and heat produced
 pub struct Recipe {
+    /// Name
+    name: String,
     /// A vector containing the items required to make the recipe
     input_items: Vec<Item>,
     /// A vector containing the items outputed by the recipe
@@ -19,7 +21,7 @@ pub struct Recipe {
 impl Recipe {
     /// Creates an empty recipe with a power draw, processing time, and heat production of 1
     pub fn new() -> Recipe {
-        Recipe { input_items: Vec::new(), output_items: Vec::new(), power_draw: 1, heat_produced: 1, processing_time: 1}
+        Recipe { name: String::from("Default"), input_items: Vec::new(), output_items: Vec::new(), power_draw: 1, heat_produced: 1, processing_time: 1}
     }
     /// Returns a vector containing references to all input items
     pub fn input_items(&self) -> &[Item] {
@@ -41,6 +43,10 @@ impl Recipe {
     pub fn processing_time(&self) -> u32 {
         self.processing_time
     }
+    /// Returns the name
+    pub fn name(&self) -> &String {
+        &self.name
+    }
     /// Sets input items
     pub fn set_input_items(&mut self, new_items: Vec<Item>) {
         self.input_items = new_items
@@ -60,6 +66,10 @@ impl Recipe {
     /// Sets processing time
     pub fn set_processing_time(&mut self, new_processing_time: u32) {
         self.processing_time = new_processing_time
+    }
+    /// Sets the name
+    pub fn set_name(&mut self, new_name: String) {
+        self.name = new_name;
     }
     /// Checks whether this recipe can be produced given an inventory
     pub fn can_be_produced(&self, inv: &Inventory) -> bool {

@@ -10,6 +10,7 @@ mod recipe_tests {
     fn default_values() {
         let recipe = Recipe::new();
         
+        assert_eq!(recipe.name(), &String::from("Default"));
         assert_eq!(recipe.input_items(), Vec::new());
         assert_eq!(recipe.output_items(), Vec::new());
         assert_eq!(recipe.power_draw(), 1);

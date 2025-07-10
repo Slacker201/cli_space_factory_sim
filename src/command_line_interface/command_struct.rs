@@ -20,4 +20,7 @@ impl Command {
     pub fn name(&self) -> String {
         self.name.to_string()
     }
+    pub fn set_args(&mut self, args: HashMap<String, String>) {
+        self.args = args;
+    }
 }

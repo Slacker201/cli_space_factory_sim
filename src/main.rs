@@ -9,7 +9,9 @@ use crate::{entities::{entity_components::inventory::inventory::Inventory, facto
 mod item_utils;
 mod entities;
 mod command_line_interface;
+mod data_handling;
 pub fn main() {
+    command_line_interface::command_dispatcher::parse_and_dispatch_command("add_recipe --items iron --sam bob");
     let mut fac = Factory::new();
     let mut inv = Inventory::new();
     let mut t_order = TransportOrder::new();
@@ -40,6 +42,8 @@ pub fn main() {
     rec.set_output_items(Vec::from([i_b4.build()]));
     rec.set_power_draw(1);
     rec.set_processing_time(1);
+    rec.name();
+    rec.set_name(String::from("Hey_Bob"));
     assembler.input_inventory();
     assembler.input_inventory_mut();
     assembler.output_inventory();
@@ -58,5 +62,5 @@ pub fn main() {
     fac.move_items_from_output_to(&mut inv, t_order2);
     fac.tick();
 
-    command_line_interface::command_dispatcher::parse_and_dispatch_command("add_recipe");
+    
 }
