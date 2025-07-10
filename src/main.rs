@@ -1,5 +1,7 @@
 
 
+use std::io;
+
 use crate::{entities::{entity_components::inventory::inventory::Inventory, factories::{entity_base::entity_base::EntityBase, factory::factory::Factory}}, item_utils::{item::item_builder::ItemBuilder, recipe::recipe::Recipe, transport_order::transport_order::TransportOrder}};
 
 
@@ -11,7 +13,29 @@ mod entities;
 mod command_line_interface;
 mod data_handling;
 pub fn main() {
-    command_line_interface::command_dispatcher::parse_and_dispatch_command("add_recipe --items iron --sam bob");
+    command_line_interface::command_dispatcher::parse_and_dispatch_command("add_recipe --item_id 1 --item_count 5");
+    loop {
+        let mut input = String::new();
+
+        println!("Enter something:");
+
+        io::stdin()
+            .read_line(&mut input)
+            .expect("Failed to read line");
+
+        if input.trim() == "exit" {
+            break;
+        }
+        else {
+            command_line_interface::command_dispatcher::parse_and_dispatch_command(&input);
+        }
+    }
+
+    compiler_tickles();
+}
+
+
+fn compiler_tickles() {
     let mut fac = Factory::new();
     let mut inv = Inventory::new();
     let mut t_order = TransportOrder::new();
@@ -61,6 +85,4 @@ pub fn main() {
     fac.move_items_from_input_to(&mut inv, t_order);
     fac.move_items_from_output_to(&mut inv, t_order2);
     fac.tick();
-
-    
 }
