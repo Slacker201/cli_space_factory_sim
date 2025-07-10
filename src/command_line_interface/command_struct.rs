@@ -23,4 +23,7 @@ impl Command {
     pub fn set_args(&mut self, args: HashMap<String, String>) {
         self.args = args;
     }
+    pub fn args(&self) -> &HashMap<String, String> {
+        &self.args
+    }
 }
