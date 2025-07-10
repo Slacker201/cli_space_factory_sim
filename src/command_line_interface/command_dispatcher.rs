@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::command_line_interface::command_struct::Command;
+use crate::command_line_interface::{command_struct::Command, commands::add_recipe::{self, add_recipe_cmd}};
 use phf::phf_map;
 
 
@@ -68,7 +68,7 @@ fn dispatch_command(cmd: Command) {
     match cmd.name().to_lowercase().as_str() {
         "add_recipe" => {
             println!("Running Add Recipe command");
-
+            add_recipe_cmd(cmd);
         }
 
         _ => {
