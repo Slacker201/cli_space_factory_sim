@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::command_line_interface::{command_struct::Command, commands::add_recipe::{self, add_recipe_cmd}};
+use crate::command_line_interface::{command_struct::Command, commands::add_recipe::add_recipe_cmd};
 use phf::phf_map;
 
 
