@@ -5,7 +5,7 @@ use crate::{command_line_interface::command_struct::Command, item_utils::{item::
 
 
 
-pub fn add_recipe_cmd(cmd: Command) {
+pub fn add_recipe_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
     let item_id;
     let item_count;
     match cmd.args().get("item_id") {
@@ -45,4 +45,5 @@ pub fn add_recipe_cmd(cmd: Command) {
     let mut rec = Recipe::new();
     rec.set_input_items(Vec::from([ItemBuilder::new().set_count(item_count).set_id(item_id).build()]));
     println!("{:?}", rec);
+    recipes.push(rec);
 }

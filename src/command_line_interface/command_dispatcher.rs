@@ -1,33 +1,20 @@
 use std::collections::HashMap;
 
-use crate::command_line_interface::{command_struct::Command, commands::add_recipe::add_recipe_cmd};
-use phf::phf_map;
-
-
-static COMMAND_MAP: phf::Map<&'static str, &'static [&'static str]> = phf_map! {
-    "add_recipe" => &["cmd_found"],
-};
+use crate::{command_line_interface::{command_struct::Command, commands::{add_recipe::add_recipe_cmd, load_recipes_from_file::load_recipes_cmd, save_recipes_to_file::save_recipes_cmd, view_recipe::view_recipes_cmd}}, item_utils::recipe::recipe::Recipe};
 
 
 
 
 
-pub fn parse_and_dispatch_command(cmd: &str) {
+
+
+pub fn parse_and_dispatch_command(cmd: &str, recipes: &mut Vec<Recipe>) {
     let mut command = Command::new();
     let parts: Vec<&str> = cmd.split_whitespace().collect();
 
     match parts.get(0) {
         Some(name) => {
-            println!("Name Found");
             command.set_name(name.to_string());
-
-            if COMMAND_MAP.get(&command.name()).is_none() {
-                println!("MASSIVE ERRORS AHEAD");
-                return;
-            }
-
-            println!("Command Found: {}", command.name());
-            println!("Gathering arguments...");
 
             let mut arg_map: HashMap<String, String> = HashMap::new();
             let args = &parts[1..];
@@ -55,24 +42,31 @@ pub fn parse_and_dispatch_command(cmd: &str) {
             // Here you can use arg_map for the command logic
             command.set_args(arg_map);
 
-            dispatch_command(command);
+            dispatch_command(command, recipes);
         }
         None => {
-            println!("Invalid Command");
+            println!("Unknown Command2");
         }
     }
 }
 
 
-fn dispatch_command(cmd: Command) {
+fn dispatch_command(cmd: Command, recipes: &mut Vec<Recipe>) {
     match cmd.name().to_lowercase().as_str() {
         "add_recipe" => {
-            println!("Running Add Recipe command");
-            add_recipe_cmd(cmd);
+            add_recipe_cmd(cmd, recipes);
         }
-
+        "view_recipes" => {
+            view_recipes_cmd(cmd, recipes);
+        }
+        "load_recipes" => {
+            load_recipes_cmd(cmd, recipes);
+        }
+        "save_recipes" => {
+            save_recipes_cmd(cmd, recipes);
+        }
         _ => {
-            println!("Unknown command")
+            println!("Unknown command3")
         }
     }
 }

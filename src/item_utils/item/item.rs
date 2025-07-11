@@ -1,4 +1,6 @@
-#[derive(PartialEq, Debug, Clone)]
+use bincode::{Decode, Encode};
+
+#[derive(PartialEq, Debug, Clone, Decode, Encode)]
 /// Represents an item with an id and a count
 pub struct Item {
     /// The id of the item

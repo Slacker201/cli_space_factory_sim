@@ -2,7 +2,7 @@
 
 use std::io;
 
-use crate::{entities::{entity_components::inventory::inventory::Inventory, factories::{entity_base::entity_base::EntityBase, factory::factory::Factory}}, item_utils::{item::item_builder::ItemBuilder, recipe::recipe::Recipe, transport_order::transport_order::TransportOrder}};
+use crate::{ entities::{entity_components::inventory::inventory::Inventory, factories::{entity_base::entity_base::EntityBase, factory::factory::Factory}}, item_utils::{item::item_builder::ItemBuilder, recipe::recipe::Recipe, transport_order::transport_order::TransportOrder}};
 
 
 
@@ -13,11 +13,10 @@ mod entities;
 mod command_line_interface;
 mod data_handling;
 pub fn main() {
-    command_line_interface::command_dispatcher::parse_and_dispatch_command("add_recipe --item_id 1 --item_count 5");
+    println!("Enter your command. Type exit to exit program");
+    let mut recipes = Vec::<Recipe>::new();
     loop {
         let mut input = String::new();
-
-        println!("Enter something:");
 
         io::stdin()
             .read_line(&mut input)
@@ -27,7 +26,7 @@ pub fn main() {
             break;
         }
         else {
-            command_line_interface::command_dispatcher::parse_and_dispatch_command(&input);
+            command_line_interface::command_dispatcher::parse_and_dispatch_command(&input, &mut recipes);
         }
     }
 

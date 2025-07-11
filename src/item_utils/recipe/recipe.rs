@@ -1,7 +1,9 @@
+use bincode::{Decode, Encode};
+
 use crate::{entities::entity_components::inventory::inventory::Inventory, item_utils::{item::item::Item, transport_order::transport_order::TransportOrder}};
 
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Decode, Encode)]
 /// Represents a recipe that holds input items, output items, power cost, processing time, and heat produced
 pub struct Recipe {
     /// Name
