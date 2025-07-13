@@ -1,4 +1,5 @@
 
+
 use crate::{command_line_interface::command_struct::Command, item_utils::{item::{item::Item, item_builder::ItemBuilder}, recipe::recipe::Recipe}};
 
 
@@ -12,6 +13,7 @@ pub fn add_recipe_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
             items
         },
         None => {
+            println!("No input item arguments found");
             return;
         },
     };
@@ -20,13 +22,79 @@ pub fn add_recipe_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
             items
         },
         None => {
+            println!("No output item arguments found");
             return;
         },
     };
 
+    let a = match get_single_arg("processing_time", &cmd) {
+        Some(str) => {
+            match str.parse::<u32>() {
+                Ok(val) => {
+                    val
+                },
+                Err(e) => {
+                    println!("Could not parse {}, error was {}", str, e);
+                    return;
+                },
+            }
+        },
+        None => {
+            println!("Argument processing1 time not found");
+            return;
+        },
+    };
+
+    let heat_produced_per_tick = match get_single_arg("heat_produced", &cmd) {
+        Some(str) => {
+            match str.parse::<u32>() {
+                Ok(val) => {
+                    val
+                },
+                Err(e) => {
+                    println!("Could not parse {}, error was {}", str, e);
+                    return;
+                },
+            }
+        },
+        None => {
+            println!("Argument heat produced not found");
+            return;
+        },
+    };
+    let power_draw = match get_single_arg("power_draw", &cmd) {
+        Some(str) => {
+            match str.parse::<u32>() {
+                Ok(val) => {
+                    val
+                },
+                Err(e) => {
+                    println!("Could not parse {}, error was {}", str, e);
+                    return;
+                },
+            }
+        },
+        None => {
+            println!("Argument power draw not found");
+            return;
+        },
+    };
+    let name = match get_single_arg("name", &cmd) {
+        Some(str) => {
+            str.replace("^", " ")
+        },
+        None => {
+            println!("Argument name not found");
+            return;
+        },
+    };
     let mut recipe = Recipe::new();
     recipe.set_input_items(input_items);
     recipe.set_output_items(output_items);
+    recipe.set_processing_time(a);
+    recipe.set_heat_produced(heat_produced_per_tick);
+    recipe.set_name(name);
+    recipe.set_power_draw(power_draw);
     println!("{:?}", recipe);
     recipes.push(recipe);
 }
@@ -78,4 +146,16 @@ fn get_item_args(argument_name: &str, cmd: &Command) -> Option<Vec<Item>>{
         },
     }
     Some(input_items)
+}
+
+fn get_single_arg(argument_name: &str, cmd: &Command) -> Option<String> {
+    match cmd.args().get(argument_name) {
+        Some(names) => {
+            return Some(names.get(names.len()-1)?.to_string())
+        },
+        None => {
+            println!("Argument {} not found", argument_name);
+            return None;
+        },
+    }
 }
