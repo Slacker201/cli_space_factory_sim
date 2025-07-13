@@ -12,7 +12,22 @@ static CFG: config::Configuration = bincode::config::standard();
 pub fn load_recipes_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
     match cmd.args().get("location") {
         Some(loc) => {
-            load_from_location(loc, recipes);
+            let location = match loc.get(0) {
+                Some(location) => match location {
+                    crate::command_line_interface::command_dispatcher::ArgumentFlag::BooleanTrue => {
+                        println!("Value was a boolean flag");
+                        return;
+                    },
+                    crate::command_line_interface::command_dispatcher::ArgumentFlag::Value(var) => {
+                        var
+                    },
+                },
+                None => {
+                    println!("Location has no value");
+                    return;
+                },
+            };
+            load_from_location(location, recipes);
         }
         None => {
             load_from_location("assets/recipe.sgs", recipes);
@@ -35,6 +50,7 @@ fn load_from_location(loc: &str, recipes: &mut Vec<Recipe>) {
     match decoded_data {
         Ok(decoded) => {
             println!("Decoded Recipes");
+            println!("{:?}", decoded.0);
             *recipes = decoded.0;
         },
         Err(e) => {

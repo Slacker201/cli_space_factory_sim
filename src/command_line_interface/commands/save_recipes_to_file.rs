@@ -12,7 +12,22 @@ static CFG: config::Configuration = bincode::config::standard();
 pub fn save_recipes_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
     match cmd.args().get("location") {
         Some(loc) => {
-            write_to_location(loc, recipes);
+            let location = match loc.get(0) {
+                Some(location) => match location {
+                    crate::command_line_interface::command_dispatcher::ArgumentFlag::BooleanTrue => {
+                        println!("Value was a boolean flag");
+                        return;
+                    },
+                    crate::command_line_interface::command_dispatcher::ArgumentFlag::Value(var) => {
+                        var
+                    },
+                },
+                None => {
+                    println!("Location has no value");
+                    return;
+                },
+            };
+            write_to_location(location, recipes);
         }
         None => {
             write_to_location("assets/recipe.sgs", recipes);
