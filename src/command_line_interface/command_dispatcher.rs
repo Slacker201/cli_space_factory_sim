@@ -4,10 +4,8 @@ use crate::{
     command_line_interface::{
         command_struct::Command,
         commands::{
-            add_recipe::add_recipe_cmd,
-            load_recipes_from_file::load_recipes_cmd,
-            save_recipes_to_file::save_recipes_cmd,
-            view_recipe::view_recipes_cmd,
+            add_recipe::add_recipe_cmd, load_recipes_from_file::load_recipes_cmd,
+            save_recipes_to_file::save_recipes_cmd, view_recipe::view_recipes_cmd,
         },
     },
     item_utils::recipe::recipe::Recipe,
@@ -56,7 +54,9 @@ fn dispatch_command(cmd: Command, recipes: &mut Vec<Recipe>) {
         "save_recipes" => {
             save_recipes_cmd(cmd, recipes);
         }
-        _ => { println!("Unknown command3") }
+        _ => {
+            println!("Unknown command3")
+        }
     }
 }
 /// This takes a &str array and returns a hashmap of (argument names, argument flag vectors)
@@ -91,7 +91,10 @@ fn parse_multiparam(args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>> {
                         continue;
                     }
                     if arg_value.starts_with("--") {
-                        println!("{}'s value started with \"--\", so we are treating it as a boolean flag", argument_name);
+                        println!(
+                            "{}'s value started with \"--\", so we are treating it as a boolean flag",
+                            argument_name
+                        );
                         i += 1;
                         arg_map.insert(argument_name.to_string(), vec![ArgumentFlag::BooleanTrue]);
                         continue;
@@ -109,7 +112,7 @@ fn parse_multiparam(args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>> {
                             println!("Arg map does not contain {}", argument_name);
                             arg_map.insert(
                                 argument_name.to_string(),
-                                vec![ArgumentFlag::Value(arg_value.to_string())]
+                                vec![ArgumentFlag::Value(arg_value.to_string())],
                             );
                         }
                     }

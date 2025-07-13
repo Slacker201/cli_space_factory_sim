@@ -12,7 +12,10 @@ pub struct TransportOrder {
 impl TransportOrder {
     /// Generates a transport order with no items and saturate inventory set to true
     pub fn new() -> TransportOrder {
-        TransportOrder { items: Vec::new(), saturate_inv: true }
+        TransportOrder {
+            items: Vec::new(),
+            saturate_inv: true,
+        }
     }
     /// Returns a reference to the item vector
     pub fn items(&self) -> &Vec<Item> {
@@ -48,6 +51,9 @@ impl TransportOrder {
 impl Default for TransportOrder {
     /// Generates a transport order with no items and saturate inventory set to true
     fn default() -> Self {
-        TransportOrder { items: Vec::default(), saturate_inv: true }
+        TransportOrder {
+            items: Vec::default(),
+            saturate_inv: true,
+        }
     }
 }

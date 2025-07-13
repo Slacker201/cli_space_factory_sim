@@ -4,7 +4,7 @@ mod tests {
 
     use crate::{
         entities::entity_components::inventory::inventory::Inventory,
-        item_utils::item::{ item::Item, item_builder::ItemBuilder },
+        item_utils::item::{item::Item, item_builder::ItemBuilder},
     };
 
     #[test]
@@ -24,14 +24,20 @@ mod tests {
     #[test]
     fn add_item_add() {
         let mut inv = Inventory::new();
-        assert_eq!(false, inv.add(ItemBuilder::new().set_count(1).set_id(1).build()).0);
+        assert_eq!(
+            false,
+            inv.add(ItemBuilder::new().set_count(1).set_id(1).build()).0
+        );
     }
 
     #[test]
     fn add_item_merge() {
         let mut inv = Inventory::new();
         inv.add(ItemBuilder::new().set_count(1).set_id(1).build());
-        assert_eq!(true, inv.add(ItemBuilder::new().set_count(1).set_id(1).build()).0);
+        assert_eq!(
+            true,
+            inv.add(ItemBuilder::new().set_count(1).set_id(1).build()).0
+        );
     }
 
     #[test]

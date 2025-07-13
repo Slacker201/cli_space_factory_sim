@@ -11,7 +11,10 @@ pub struct Command {
 /// Impl block for Command. Contains setters, getters and new()
 impl Command {
     pub fn new() -> Command {
-        Command { name: String::from("error"), args: HashMap::new() }
+        Command {
+            name: String::from("error"),
+            args: HashMap::new(),
+        }
     }
     pub fn set_name(&mut self, new_name: String) {
         self.name = new_name;

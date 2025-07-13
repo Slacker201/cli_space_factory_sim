@@ -3,7 +3,7 @@
 use std::collections::HashMap;
 
 use crate::item_utils::{
-    item::{ item::Item, item_builder::ItemBuilder },
+    item::{item::Item, item_builder::ItemBuilder},
     transport_order::transport_order::TransportOrder,
 };
 
@@ -23,7 +23,12 @@ pub struct Inventory {
 impl Inventory {
     /// Generates a new empty `Inventory` with a maximum capacity of 100.
     pub fn new() -> Inventory {
-        Inventory { items: HashMap::new(), max_capacity: 100, items_changed: true, capacity: 0 }
+        Inventory {
+            items: HashMap::new(),
+            max_capacity: 100,
+            items_changed: true,
+            capacity: 0,
+        }
     }
     /// Returns a reference to the items hashmap
     pub fn items(&self) -> &HashMap<u64, Item> {
@@ -41,7 +46,9 @@ impl Inventory {
         match self.items.get_mut(&id) {
             Some(item_in_inventory) => {
                 item_in_inventory.set_count(
-                    item_in_inventory.count().saturating_add(item_to_add.count())
+                    item_in_inventory
+                        .count()
+                        .saturating_add(item_to_add.count()),
                 );
                 (true, None)
             }

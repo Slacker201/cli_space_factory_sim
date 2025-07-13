@@ -1,7 +1,6 @@
 use crate::{
     entities::entity_components::{
-        assembler::processing_state::ProcessingState,
-        inventory::inventory::Inventory,
+        assembler::processing_state::ProcessingState, inventory::inventory::Inventory,
     },
     item_utils::recipe::recipe::Recipe,
 };
@@ -128,7 +127,7 @@ impl Assembler {
     fn start_processing(&mut self) {
         self.input_inventory.move_items_to(
             self.recipe.input_items_as_transport_order(),
-            &mut self.processing_inventory
+            &mut self.processing_inventory,
         );
         self.set_processing_state(ProcessingState::Processing(1));
     }
@@ -136,9 +135,8 @@ impl Assembler {
     // another helper for tick func
     fn end_processing(&mut self) {
         // Finished processing
-        self.output_inventory.add_multiple(
-            self.recipe.output_items().into_iter().cloned().collect()
-        );
+        self.output_inventory
+            .add_multiple(self.recipe.output_items().into_iter().cloned().collect());
         self.processing_inventory.clear();
         self.set_processing_state(ProcessingState::Idle);
     }

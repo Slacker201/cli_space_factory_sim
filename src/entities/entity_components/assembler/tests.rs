@@ -2,10 +2,10 @@
 mod tests {
     use crate::{
         entities::entity_components::{
-            assembler::{ assembler::Assembler, processing_state::ProcessingState },
+            assembler::{assembler::Assembler, processing_state::ProcessingState},
             inventory::inventory::Inventory,
         },
-        item_utils::{ item::item_builder::ItemBuilder, recipe::recipe::Recipe },
+        item_utils::{item::item_builder::ItemBuilder, recipe::recipe::Recipe},
     };
 
     #[test]
@@ -66,7 +66,10 @@ mod tests {
         let mut assembler = Assembler::new();
 
         // Act
-        rec.set_input_items(Vec::from([ItemBuilder::new().set_count(1).set_id(1).build()]));
+        rec.set_input_items(Vec::from([ItemBuilder::new()
+            .set_count(1)
+            .set_id(1)
+            .build()]));
         assembler.set_recipe(rec.clone());
 
         // Assert
@@ -80,7 +83,10 @@ mod tests {
         // Act
         assembler.set_processing_state(ProcessingState::Processing(69));
         // Assert
-        assert_eq!(assembler.processing_state(), &ProcessingState::Processing(69));
+        assert_eq!(
+            assembler.processing_state(),
+            &ProcessingState::Processing(69)
+        );
     }
 
     #[test]
@@ -89,7 +95,10 @@ mod tests {
         let mut assembler = Assembler::new();
         let mut rec = Recipe::new();
         // Act
-        rec.set_input_items(Vec::from([ItemBuilder::new().set_count(5).set_id(1).build()]));
+        rec.set_input_items(Vec::from([ItemBuilder::new()
+            .set_count(5)
+            .set_id(1)
+            .build()]));
         rec.set_processing_time(1);
         assembler.set_recipe(rec);
         for _ in 0..10 {
@@ -107,10 +116,15 @@ mod tests {
         let mut rec = Recipe::new();
 
         // Act
-        rec.set_input_items(Vec::from([ItemBuilder::new().set_count(5).set_id(1).build()]));
+        rec.set_input_items(Vec::from([ItemBuilder::new()
+            .set_count(5)
+            .set_id(1)
+            .build()]));
         rec.set_processing_time(20);
         assembler.set_recipe(rec);
-        assembler.input_inventory_mut().add(ItemBuilder::new().set_count(200).set_id(1).build());
+        assembler
+            .input_inventory_mut()
+            .add(ItemBuilder::new().set_count(200).set_id(1).build());
         assembler.tick();
 
         // Assert
@@ -140,11 +154,19 @@ mod tests {
         let mut rec = Recipe::new();
 
         // Act
-        rec.set_input_items(Vec::from([ItemBuilder::new().set_count(5).set_id(1).build()]));
-        rec.set_output_items(Vec::from([ItemBuilder::new().set_count(1).set_id(2).build()]));
+        rec.set_input_items(Vec::from([ItemBuilder::new()
+            .set_count(5)
+            .set_id(1)
+            .build()]));
+        rec.set_output_items(Vec::from([ItemBuilder::new()
+            .set_count(1)
+            .set_id(2)
+            .build()]));
         rec.set_processing_time(1);
         assembler.set_recipe(rec);
-        assembler.input_inventory_mut().add(ItemBuilder::new().set_count(200).set_id(1).build());
+        assembler
+            .input_inventory_mut()
+            .add(ItemBuilder::new().set_count(200).set_id(1).build());
         assembler.tick();
 
         // Assert
@@ -161,11 +183,19 @@ mod tests {
         let mut rec = Recipe::new();
 
         // Act
-        rec.set_input_items(Vec::from([ItemBuilder::new().set_count(5).set_id(1).build()]));
-        rec.set_output_items(Vec::from([ItemBuilder::new().set_count(1).set_id(2).build()]));
+        rec.set_input_items(Vec::from([ItemBuilder::new()
+            .set_count(5)
+            .set_id(1)
+            .build()]));
+        rec.set_output_items(Vec::from([ItemBuilder::new()
+            .set_count(1)
+            .set_id(2)
+            .build()]));
         rec.set_processing_time(1);
         assembler.set_recipe(rec);
-        assembler.input_inventory_mut().add(ItemBuilder::new().set_count(200).set_id(1).build());
+        assembler
+            .input_inventory_mut()
+            .add(ItemBuilder::new().set_count(200).set_id(1).build());
         for _ in 0..5 {
             assembler.tick();
         }
@@ -183,11 +213,19 @@ mod tests {
         let mut rec = Recipe::new();
 
         // Act
-        rec.set_input_items(Vec::from([ItemBuilder::new().set_count(5).set_id(1).build()]));
-        rec.set_output_items(Vec::from([ItemBuilder::new().set_count(1).set_id(2).build()]));
+        rec.set_input_items(Vec::from([ItemBuilder::new()
+            .set_count(5)
+            .set_id(1)
+            .build()]));
+        rec.set_output_items(Vec::from([ItemBuilder::new()
+            .set_count(1)
+            .set_id(2)
+            .build()]));
         rec.set_processing_time(1);
         assembler.set_recipe(rec);
-        assembler.input_inventory_mut().add(ItemBuilder::new().set_count(200).set_id(1).build());
+        assembler
+            .input_inventory_mut()
+            .add(ItemBuilder::new().set_count(200).set_id(1).build());
         for _ in 0..5 {
             assembler.tick();
         }
@@ -206,11 +244,19 @@ mod tests {
         let mut rec = Recipe::new();
 
         // Act
-        rec.set_input_items(Vec::from([ItemBuilder::new().set_count(5).set_id(1).build()]));
-        rec.set_output_items(Vec::from([ItemBuilder::new().set_count(1).set_id(2).build()]));
+        rec.set_input_items(Vec::from([ItemBuilder::new()
+            .set_count(5)
+            .set_id(1)
+            .build()]));
+        rec.set_output_items(Vec::from([ItemBuilder::new()
+            .set_count(1)
+            .set_id(2)
+            .build()]));
         rec.set_processing_time(1);
         assembler.set_recipe(rec);
-        assembler.input_inventory_mut().add(ItemBuilder::new().set_count(5).set_id(1).build());
+        assembler
+            .input_inventory_mut()
+            .add(ItemBuilder::new().set_count(5).set_id(1).build());
         for _ in 0..5 {
             assembler.tick();
         }
@@ -226,11 +272,19 @@ mod tests {
         let mut rec = Recipe::new();
 
         // Act
-        rec.set_input_items(Vec::from([ItemBuilder::new().set_count(5).set_id(1).build()]));
-        rec.set_output_items(Vec::from([ItemBuilder::new().set_count(1).set_id(2).build()]));
+        rec.set_input_items(Vec::from([ItemBuilder::new()
+            .set_count(5)
+            .set_id(1)
+            .build()]));
+        rec.set_output_items(Vec::from([ItemBuilder::new()
+            .set_count(1)
+            .set_id(2)
+            .build()]));
         rec.set_processing_time(1);
         assembler.set_recipe(rec);
-        assembler.input_inventory_mut().add(ItemBuilder::new().set_count(4).set_id(1).build());
+        assembler
+            .input_inventory_mut()
+            .add(ItemBuilder::new().set_count(4).set_id(1).build());
         assembler.tick();
 
         // Assert
@@ -244,11 +298,19 @@ mod tests {
         let mut rec = Recipe::new();
 
         // Act
-        rec.set_input_items(Vec::from([ItemBuilder::new().set_count(5).set_id(1).build()]));
-        rec.set_output_items(Vec::from([ItemBuilder::new().set_count(1).set_id(2).build()]));
+        rec.set_input_items(Vec::from([ItemBuilder::new()
+            .set_count(5)
+            .set_id(1)
+            .build()]));
+        rec.set_output_items(Vec::from([ItemBuilder::new()
+            .set_count(1)
+            .set_id(2)
+            .build()]));
         rec.set_processing_time(0);
         assembler.set_recipe(rec);
-        assembler.input_inventory_mut().add(ItemBuilder::new().set_count(20).set_id(1).build());
+        assembler
+            .input_inventory_mut()
+            .add(ItemBuilder::new().set_count(20).set_id(1).build());
         assembler.tick();
 
         // Assert
@@ -268,10 +330,15 @@ mod tests {
 
         // Act
         rec.set_input_items(Vec::new());
-        rec.set_output_items(Vec::from([ItemBuilder::new().set_count(1).set_id(2).build()]));
+        rec.set_output_items(Vec::from([ItemBuilder::new()
+            .set_count(1)
+            .set_id(2)
+            .build()]));
         rec.set_processing_time(1);
         assembler.set_recipe(rec);
-        assembler.input_inventory_mut().add(ItemBuilder::new().set_count(4).set_id(1).build());
+        assembler
+            .input_inventory_mut()
+            .add(ItemBuilder::new().set_count(4).set_id(1).build());
         assembler.tick();
 
         // Assert
@@ -288,11 +355,19 @@ mod tests {
         let mut rec = Recipe::new();
 
         // Act
-        rec.set_input_items(Vec::from([ItemBuilder::new().set_count(5).set_id(1).build()]));
-        rec.set_output_items(Vec::from([ItemBuilder::new().set_count(1).set_id(2).build()]));
+        rec.set_input_items(Vec::from([ItemBuilder::new()
+            .set_count(5)
+            .set_id(1)
+            .build()]));
+        rec.set_output_items(Vec::from([ItemBuilder::new()
+            .set_count(1)
+            .set_id(2)
+            .build()]));
         rec.set_processing_time(1);
         assembler.set_recipe(rec);
-        assembler.input_inventory_mut().add(ItemBuilder::new().set_count(5).set_id(1).build());
+        assembler
+            .input_inventory_mut()
+            .add(ItemBuilder::new().set_count(5).set_id(1).build());
         assembler.tick();
 
         // Assert

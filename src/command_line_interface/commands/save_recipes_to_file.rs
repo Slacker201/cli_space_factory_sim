@@ -1,8 +1,8 @@
-use std::{ fs::File, io::Write };
+use std::{fs::File, io::Write};
 
 use bincode::config;
 
-use crate::{ command_line_interface::command_struct::Command, item_utils::recipe::recipe::Recipe };
+use crate::{command_line_interface::command_struct::Command, item_utils::recipe::recipe::Recipe};
 
 static CFG: config::Configuration = bincode::config::standard();
 /// This saves the recipes vector to the given file, or "assets/recipe.sgs" if it is not given

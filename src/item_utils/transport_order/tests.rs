@@ -1,12 +1,9 @@
-
-
-
-
 #[cfg(test)]
 mod transport_order_tests {
-    
-    use crate::item_utils::{item::item_builder::ItemBuilder, transport_order::transport_order::TransportOrder};
 
+    use crate::item_utils::{
+        item::item_builder::ItemBuilder, transport_order::transport_order::TransportOrder,
+    };
 
     #[test]
     fn id_persistance() {

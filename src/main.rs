@@ -4,33 +4,34 @@ use crate::{
     command_line_interface::command_dispatcher::ArgumentFlag,
     entities::{
         entity_components::inventory::inventory::Inventory,
-        factories::{ entity_base::entity_base::EntityBase, factory::factory::Factory },
+        factories::{entity_base::entity_base::EntityBase, factory::factory::Factory},
     },
     item_utils::{
-        item::item_builder::ItemBuilder,
-        recipe::recipe::Recipe,
+        item::item_builder::ItemBuilder, recipe::recipe::Recipe,
         transport_order::transport_order::TransportOrder,
     },
 };
 
-mod item_utils;
-mod entities;
 mod command_line_interface;
 mod data_handling;
+mod entities;
+mod item_utils;
 pub fn main() {
     println!("Enter your command. Type exit to exit program");
     let mut recipes = Vec::<Recipe>::new();
     loop {
         let mut input = String::new();
 
-        io::stdin().read_line(&mut input).expect("Failed to read line");
+        io::stdin()
+            .read_line(&mut input)
+            .expect("Failed to read line");
 
         if input.trim() == "exit" {
             break;
         } else {
             command_line_interface::command_dispatcher::parse_and_dispatch_command(
                 &input,
-                &mut recipes
+                &mut recipes,
             );
         }
     }

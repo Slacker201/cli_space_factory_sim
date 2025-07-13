@@ -1,2 +1,2 @@
-pub mod inventory;
 pub mod assembler;
+pub mod inventory;
