@@ -1,49 +1,81 @@
 
-use crate::{command_line_interface::command_struct::Command, item_utils::{item::item_builder::ItemBuilder, recipe::recipe::Recipe}};
+use crate::{command_line_interface::command_struct::Command, item_utils::{item::{item::Item, item_builder::ItemBuilder}, recipe::recipe::Recipe}};
 
 
 
 
 
 pub fn add_recipe_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
-    let item_id;
-    let item_count;
-    match cmd.args().get("item_id") {
-        Some(id_str) => {
-            match id_str.parse::<u64>() {
-                Ok(arg) => {
-                    item_id = arg
-                },
-                Err(e) => {
-                    println!("Error in parsing item_id: {}", e);
-                    return;
-                },
+    println!("Adding Recipe");
+    let input_items = match get_item_args("input_item", &cmd) {
+        Some(items) => {
+            items
+        },
+        None => {
+            return;
+        },
+    };
+    let output_items = match get_item_args("output_item", &cmd) {
+        Some(items) => {
+            items
+        },
+        None => {
+            return;
+        },
+    };
+
+    let mut recipe = Recipe::new();
+    recipe.set_input_items(input_items);
+    recipe.set_output_items(output_items);
+    println!("{:?}", recipe);
+    recipes.push(recipe);
+}
+
+fn get_item_args(argument_name: &str, cmd: &Command) -> Option<Vec<Item>>{
+    let mut input_items = Vec::new();
+    match cmd.args().get(argument_name) {
+        Some(argument_list) => {
+            for arg in argument_list {
+                match arg {
+                    crate::command_line_interface::command_dispatcher::ArgumentFlag::BooleanTrue => {
+                        println!("The argument value given is not an item. The correct format is id:count")
+                    },
+                    crate::command_line_interface::command_dispatcher::ArgumentFlag::Value(id_count_amalgamation) => {
+                        let arg_parts: Vec<&str> = id_count_amalgamation.split(':').collect();
+                        if arg_parts.len() != 2 {
+                            println!("Invalid item format. The correct format is id:count");
+                            return None;
+                        }
+                        let id;
+                        let count;
+                        match arg_parts[0].parse::<u64>() {
+                            Ok(parsed_id) => {
+                                id = parsed_id
+                            },
+                            Err(e) => {
+                                println!("Error parsing the count of {}. Error is {}", id_count_amalgamation, e);
+                                return None;
+                            },
+                        }
+                        match arg_parts[1].parse::<u128>() {
+                            Ok(parsed_count) => {
+                                count = parsed_count
+                            },
+                            Err(e) => {
+                                println!("Error parsing the count of {}. Error is {}", id_count_amalgamation, e);
+                                return None;
+                            },
+                        }
+
+                        input_items.push(ItemBuilder::new().set_count(count).set_id(id).build());
+                    },
+                }
             }
         },
         None => {
-            println!("Missing item_id argument");
-            return;
+            println!("No items given");
+            return None;
         },
     }
-    match cmd.args().get("item_count") {
-        Some(id_str) => {
-            match id_str.parse::<u128>() {
-                Ok(arg) => {
-                    item_count = arg
-                },
-                Err(e) => {
-                    println!("Error in parsing item_count: {}", e);
-                    return;
-                },
-            }
-        },
-        None => {
-            println!("Missing item_count argument");
-            return;
-        },
-    }
-    let mut rec = Recipe::new();
-    rec.set_input_items(Vec::from([ItemBuilder::new().set_count(item_count).set_id(item_id).build()]));
-    println!("{:?}", rec);
-    recipes.push(rec);
+    Some(input_items)
 }
