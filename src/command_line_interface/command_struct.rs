@@ -1,11 +1,13 @@
 use std::collections::HashMap;
 
+use crate::command_line_interface::command_dispatcher::ArgumentFlag;
+
 
 
 
 pub struct Command {
     name: String,
-    args: HashMap<String, String>
+    args: HashMap<String, Vec<ArgumentFlag>>
 }
 
 
@@ -20,10 +22,10 @@ impl Command {
     pub fn name(&self) -> String {
         self.name.to_string()
     }
-    pub fn set_args(&mut self, args: HashMap<String, String>) {
+    pub fn set_args(&mut self, args: HashMap<String, Vec<ArgumentFlag>>) {
         self.args = args;
     }
-    pub fn args(&self) -> &HashMap<String, String> {
+    pub fn args(&self) -> &HashMap<String, Vec<ArgumentFlag>> {
         &self.args
     }
 }
