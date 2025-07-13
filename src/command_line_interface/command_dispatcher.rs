@@ -121,3 +121,18 @@ pub enum ArgumentFlag {
     BooleanTrue,
     Value(String)
 }
+
+impl ArgumentFlag {
+    pub fn to_string(&self) -> String {
+        match self {
+            ArgumentFlag::BooleanTrue => String::from("True"),
+            ArgumentFlag::Value(val) => val.clone(),
+        }
+    }
+    pub fn to_string_consume(self) -> String {
+        match self {
+            ArgumentFlag::BooleanTrue => String::from("True"),
+            ArgumentFlag::Value(val) => val,
+        }
+    }
+}
