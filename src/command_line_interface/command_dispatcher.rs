@@ -5,43 +5,24 @@ use crate::{command_line_interface::{command_struct::Command, commands::{add_rec
 
 
 
-
-
-
-pub fn parse_and_dispatch_command(cmd: &str, recipes: &mut Vec<Recipe>) {
+pub fn parse_and_dispatch_command(comd: &str, recipes: &mut Vec<Recipe>) {
     let mut command = Command::new();
+    let cmd = comd.to_lowercase();
+    if cmd.contains("\x01true") {
+        println!("Invalid Characters");
+        return;
+    }
     let parts: Vec<&str> = cmd.split_whitespace().collect();
 
     match parts.get(0) {
         Some(name) => {
             command.set_name(name.to_string());
 
-            let mut arg_map: HashMap<String, String> = HashMap::new();
             let args = &parts[1..];
-            let mut i = 0;
-
-            while i < args.len() {
-                if args[i].starts_with("--") {
-                    let key = args[i].strip_prefix("--").unwrap();
-
-                    if i + 1 < args.len() && !args[i + 1].starts_with("--") {
-                        let value = args[i + 1];
-                        arg_map.insert(key.to_string(), value.to_string());
-                        i += 2;
-                    } else {
-                        arg_map.insert(key.to_string(), "".to_string());
-                        println!("Added flag {} with no value", key);
-                        i += 1;
-                    }
-                } else {
-                    println!("Word did not have \"--\" in front of it: {}", args[i]);
-                    i += 1;
-                }
-            }
-
-            // Here you can use arg_map for the command logic
+            
+            let arg_map = parse_multiparam(args);
+            println!("{:?}", arg_map);
             command.set_args(arg_map);
-
             dispatch_command(command, recipes);
         }
         None => {
@@ -52,6 +33,7 @@ pub fn parse_and_dispatch_command(cmd: &str, recipes: &mut Vec<Recipe>) {
 
 
 fn dispatch_command(cmd: Command, recipes: &mut Vec<Recipe>) {
+    println!("Dispatching command");
     match cmd.name().to_lowercase().as_str() {
         "add_recipe" => {
             add_recipe_cmd(cmd, recipes);
@@ -69,4 +51,73 @@ fn dispatch_command(cmd: Command, recipes: &mut Vec<Recipe>) {
             println!("Unknown command3")
         }
     }
+}
+
+fn parse_multiparam (args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>>{
+    println!("printing");
+    println!("{:?}", args);
+    let mut arg_map: HashMap<String, Vec<ArgumentFlag>> = HashMap::new();
+    let mut i = 0;
+    let args_len = args.len();
+    while i < args_len {
+        let current_arg = args[i];
+        if current_arg.starts_with("--") {
+            // now we take it and the next word, and skip the next word.
+            if i+1 >= args_len {
+                // there is no room for a value for the argument
+                println!("Invalid argument, no value for argument {} so we are treating it as a boolean flag", args[i]);
+                i += 1;
+                arg_map.insert(current_arg.to_string(), vec![ArgumentFlag::BooleanTrue]);
+                
+                continue;
+            }
+            // There is room for the argument
+            let arg_value = args[i+1];
+            match args[i].strip_prefix("--") {
+                Some(argument_name) => {
+                    if argument_name == "" {
+                        println!("Argument name was empty");
+                        i += 1;
+                        continue;
+                    }
+                    if arg_value.starts_with("--") {
+                        println!("{}'s value started with \"--\", so we are treating it as a boolean flag", argument_name);
+                        i += 1;
+                        arg_map.insert(argument_name.to_string(), vec![ArgumentFlag::BooleanTrue]);
+                        continue;
+                    }
+                    println!("The argument name contained \"--\"");
+                    println!("Adding {} to {argument_name}", arg_value);
+                    match arg_map.get_mut(argument_name) {
+                        Some(mutt) => {
+                            println!("The arg map contained the argument name so we add the new value to the end");
+                            mutt.push(ArgumentFlag::Value(arg_value.to_string()));
+                        },
+                        None => {
+                            println!("Arg map does not contain {}", argument_name);
+                            arg_map.insert(argument_name.to_string(), vec![ArgumentFlag::Value(arg_value.to_string())]);
+                        },
+                    }
+                },
+                None => {
+                    println!("The argument name did not contain \"--\"")
+                },
+            }
+            i += 2;
+        
+        } else {
+            // otherwise we call invalid argument and skip it
+            println!("Invalid Argument");
+            i += 1;
+        }
+    }
+    println!("Finished parsing");
+    arg_map
+}
+
+
+#[derive(Debug)]
+pub enum ArgumentFlag {
+    BooleanTrue,
+    Value(String)
 }
