@@ -8,7 +8,7 @@ use crate::{command_line_interface::command_struct::Command, item_utils::recipe:
 
 
 static CFG: config::Configuration = bincode::config::standard();
-
+/// This saves the recipes vector to the given file, or "assets/recipe.sgs" if it is not given
 pub fn save_recipes_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
     match cmd.args().get("location") {
         Some(loc) => {
@@ -35,7 +35,7 @@ pub fn save_recipes_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
     }
 }
 
-
+/// This encodes the recipe vector and saves it to a file, printing an error and returning if it fails
 fn write_to_location(loc: &str, recipes: &Vec<Recipe>) {
     let mut target_file = match File::create(loc) {
         Ok(file) => {
@@ -60,6 +60,4 @@ fn write_to_location(loc: &str, recipes: &Vec<Recipe>) {
             return;
         },
     };
-    
-
 }

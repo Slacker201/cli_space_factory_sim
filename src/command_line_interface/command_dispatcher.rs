@@ -4,7 +4,7 @@ use crate::{command_line_interface::{command_struct::Command, commands::{add_rec
 
 
 
-
+/// This splits the command into tokens and runs them through a parser before dispatching the command
 pub fn parse_and_dispatch_command(comd: &str, recipes: &mut Vec<Recipe>) {
     let mut command = Command::new();
     let cmd = comd.to_lowercase();
@@ -31,7 +31,7 @@ pub fn parse_and_dispatch_command(comd: &str, recipes: &mut Vec<Recipe>) {
     }
 }
 
-
+/// This uses a switch statement on the command name to run a command
 fn dispatch_command(cmd: Command, recipes: &mut Vec<Recipe>) {
     println!("Dispatching command");
     match cmd.name().to_lowercase().as_str() {
@@ -52,7 +52,7 @@ fn dispatch_command(cmd: Command, recipes: &mut Vec<Recipe>) {
         }
     }
 }
-
+/// This takes a &str array and returns a hashmap of (argument names, argument flag vectors)
 fn parse_multiparam (args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>>{
     println!("printing");
     println!("{:?}", args);
@@ -117,18 +117,21 @@ fn parse_multiparam (args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>>{
 
 
 #[derive(Debug)]
+/// This is a simple type for command line arguments
 pub enum ArgumentFlag {
     BooleanTrue,
     Value(String)
 }
-
+/// Impl block for ArgumentFlag
 impl ArgumentFlag {
+    /// Returns the string value of the argument. Returns True if the flag is BooleanTrue and the string value if it is Value
     pub fn to_string(&self) -> String {
         match self {
             ArgumentFlag::BooleanTrue => String::from("True"),
             ArgumentFlag::Value(val) => val.clone(),
         }
     }
+    /// Returns the string value of the argument. Returns True if the flag is BooleanTrue and the string value if it is Value. Consumes the argument
     pub fn to_string_consume(self) -> String {
         match self {
             ArgumentFlag::BooleanTrue => String::from("True"),

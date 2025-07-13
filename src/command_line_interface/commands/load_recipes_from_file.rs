@@ -8,7 +8,7 @@ use crate::{command_line_interface::command_struct::Command, item_utils::recipe:
 
 
 static CFG: config::Configuration = bincode::config::standard();
-
+/// This loads the recipe vector from the given location, if the location is not given it uses "assets/recipe.sgs"
 pub fn load_recipes_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
     match cmd.args().get("location") {
         Some(loc) => {
@@ -35,7 +35,7 @@ pub fn load_recipes_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
     }
 }
 
-
+/// This loads a file from the given location and decodes the recipes and sets the recipes variable to the decoded recipes, printing and error and returning if it fails
 fn load_from_location(loc: &str, recipes: &mut Vec<Recipe>) {
     let mut a = match File::open(loc) {
         Ok(file1) => file1,

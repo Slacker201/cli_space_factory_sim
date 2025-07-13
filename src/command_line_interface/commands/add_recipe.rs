@@ -5,7 +5,7 @@ use crate::{command_line_interface::command_struct::Command, item_utils::{item::
 
 
 
-
+/// This adds a recipe to the recipe vector if it has the correct arguments. Otherwise it fails
 pub fn add_recipe_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
     println!("Adding Recipe");
     let input_items = match get_item_args("input_item", &cmd) {
@@ -99,6 +99,7 @@ pub fn add_recipe_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
     recipes.push(recipe);
 }
 
+/// This returns an option for vector holding items. The items are found by parsing a given argument
 fn get_item_args(argument_name: &str, cmd: &Command) -> Option<Vec<Item>>{
     let mut input_items = Vec::new();
     match cmd.args().get(argument_name) {
@@ -147,7 +148,7 @@ fn get_item_args(argument_name: &str, cmd: &Command) -> Option<Vec<Item>>{
     }
     Some(input_items)
 }
-
+/// This returns the last argument for a given argument name, or nothing if its not found
 fn get_single_arg(argument_name: &str, cmd: &Command) -> Option<String> {
     match cmd.args().get(argument_name) {
         Some(names) => {

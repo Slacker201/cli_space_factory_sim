@@ -4,14 +4,14 @@ use crate::command_line_interface::command_dispatcher::ArgumentFlag;
 
 
 
-
+/// Represents a command, holds a command name and a hashmap of arguments
 pub struct Command {
     name: String,
     args: HashMap<String, Vec<ArgumentFlag>>
 }
 
 
-
+/// Impl block for Command. Contains setters, getters and new()
 impl Command {
     pub fn new() -> Command {
         Command { name: String::from("error"), args: HashMap::new() }
