@@ -2,9 +2,10 @@
 
 use std::collections::HashMap;
 
-use crate::item_utils::{item::{item::Item, item_builder::ItemBuilder}, transport_order::transport_order::TransportOrder};
-
-
+use crate::item_utils::{
+    item::{ item::Item, item_builder::ItemBuilder },
+    transport_order::transport_order::TransportOrder,
+};
 
 #[derive(Debug, PartialEq, Clone)]
 /// Represents an inventory that holds items. Used by objects to manage their item collections.
@@ -16,14 +17,13 @@ pub struct Inventory {
     /// Indicates whether the items have changed, used to avoid unnecessary recalculations of capacity.
     items_changed: bool,
     /// Cached total item count
-    capacity: u128
+    capacity: u128,
 }
-
 
 impl Inventory {
     /// Generates a new empty `Inventory` with a maximum capacity of 100.
     pub fn new() -> Inventory {
-        Inventory { items: HashMap::new(), max_capacity: 100, items_changed: true, capacity: 0}
+        Inventory { items: HashMap::new(), max_capacity: 100, items_changed: true, capacity: 0 }
     }
     /// Returns a reference to the items hashmap
     pub fn items(&self) -> &HashMap<u64, Item> {
@@ -40,13 +40,15 @@ impl Inventory {
         self.items_changed = true;
         match self.items.get_mut(&id) {
             Some(item_in_inventory) => {
-                item_in_inventory.set_count(item_in_inventory.count().saturating_add(item_to_add.count()));
+                item_in_inventory.set_count(
+                    item_in_inventory.count().saturating_add(item_to_add.count())
+                );
                 (true, None)
-            },
+            }
             None => {
                 self.items.insert(id, item_to_add);
                 (false, None)
-            },
+            }
         }
     }
     /// returns an optional reference to the item corresponding to the id
@@ -63,7 +65,7 @@ impl Inventory {
         if self.items_changed {
             let mut mass_count = 0u128;
             for item in &self.items {
-                mass_count += item.1.count()
+                mass_count += item.1.count();
             }
             self.capacity = mass_count;
         }
@@ -73,7 +75,7 @@ impl Inventory {
     /// Removes an item from the inventory and returns it if found
     pub fn remove(&mut self, item: &Item) -> Option<Item> {
         let found = self.get_mut(item.id())?;
-        
+
         if found.count() > item.count() {
             found.set_count(found.count() - item.count());
             Some(item.clone())
@@ -120,9 +122,7 @@ impl Inventory {
 
     /// Moves items from itself into another inventory according to a transport order
     pub fn move_items_to(&mut self, t_order: TransportOrder, tar_inv: &mut Inventory) {
-
         for item in t_order.items() {
-
             // Check if the source inventory contains the item
             match self.get_mut(item.id()) {
                 Some(_) => {
@@ -134,8 +134,7 @@ impl Inventory {
                         Some(removed_item) => {
                             tar_inv.add(removed_item);
                         }
-                        None => {
-                        }
+                        None => {}
                     }
                 }
                 None => {
@@ -151,7 +150,7 @@ impl Inventory {
             self.add(item);
         }
     }
-    
+
     /// Returns true if the inventory is empty
     pub fn is_empty(&self) -> bool {
         self.items.is_empty()
@@ -161,4 +160,3 @@ impl Inventory {
         self.items.clear();
     }
 }
-

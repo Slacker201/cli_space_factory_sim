@@ -1,9 +1,8 @@
 use crate::item_utils::item::item::Item;
 
-
 /// Item builder, it builds items.
 pub struct ItemBuilder {
-    item: Item
+    item: Item,
 }
 
 impl ItemBuilder {
@@ -26,7 +25,6 @@ impl ItemBuilder {
     pub fn build(self) -> Item {
         self.item
     }
-    
 
     // Test only functions
     #[cfg(test)]
@@ -40,4 +38,3 @@ impl ItemBuilder {
         self.item.count()
     }
 }
-

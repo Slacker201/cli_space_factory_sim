@@ -1,7 +1,5 @@
 use std::ops::AddAssign;
 
-
-
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
 /// The processing state enum.
 /// This is used to track various factory processes
@@ -10,7 +8,7 @@ pub enum ProcessingState {
     Idle,
     /// Processing means the factory is processing.
     /// The value in processing is the current processing tick
-    Processing(u32)
+    Processing(u32),
 }
 
 impl AddAssign<u32> for ProcessingState {
@@ -20,10 +18,10 @@ impl AddAssign<u32> for ProcessingState {
             // If currently Idle, adding n makes a new Processing(n) enum
             ProcessingState::Idle => {
                 *self = ProcessingState::Processing(rhs);
-            },
+            }
             ProcessingState::Processing(x) => {
                 *x += rhs;
-            },
+            }
         }
     }
 }

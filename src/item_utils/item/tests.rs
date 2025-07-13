@@ -1,8 +1,3 @@
-
-
-
-
-
 #[cfg(test)]
 mod item_builder_tests {
     use crate::item_utils::item::item_builder::ItemBuilder;
@@ -22,7 +17,7 @@ mod item_builder_tests {
     }
     #[test]
     fn count_setter() {
-        let builder= ItemBuilder::new().set_count(2);
+        let builder = ItemBuilder::new().set_count(2);
 
         assert_eq!(builder.count(), 2)
     }
@@ -33,7 +28,6 @@ mod item_tests {
     use std::u64;
 
     use crate::item_utils::item::item::Item;
-
 
     #[test]
     fn default_values() {

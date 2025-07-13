@@ -1,8 +1,17 @@
 use std::collections::HashMap;
 
-use crate::{command_line_interface::{command_struct::Command, commands::{add_recipe::add_recipe_cmd, load_recipes_from_file::load_recipes_cmd, save_recipes_to_file::save_recipes_cmd, view_recipe::view_recipes_cmd}}, item_utils::recipe::recipe::Recipe};
-
-
+use crate::{
+    command_line_interface::{
+        command_struct::Command,
+        commands::{
+            add_recipe::add_recipe_cmd,
+            load_recipes_from_file::load_recipes_cmd,
+            save_recipes_to_file::save_recipes_cmd,
+            view_recipe::view_recipes_cmd,
+        },
+    },
+    item_utils::recipe::recipe::Recipe,
+};
 
 /// This splits the command into tokens and runs them through a parser before dispatching the command
 pub fn parse_and_dispatch_command(comd: &str, recipes: &mut Vec<Recipe>) {
@@ -19,7 +28,7 @@ pub fn parse_and_dispatch_command(comd: &str, recipes: &mut Vec<Recipe>) {
             command.set_name(name.to_string());
 
             let args = &parts[1..];
-            
+
             let arg_map = parse_multiparam(args);
             println!("{:?}", arg_map);
             command.set_args(arg_map);
@@ -47,13 +56,11 @@ fn dispatch_command(cmd: Command, recipes: &mut Vec<Recipe>) {
         "save_recipes" => {
             save_recipes_cmd(cmd, recipes);
         }
-        _ => {
-            println!("Unknown command3")
-        }
+        _ => { println!("Unknown command3") }
     }
 }
 /// This takes a &str array and returns a hashmap of (argument names, argument flag vectors)
-fn parse_multiparam (args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>>{
+fn parse_multiparam(args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>> {
     println!("printing");
     println!("{:?}", args);
     let mut arg_map: HashMap<String, Vec<ArgumentFlag>> = HashMap::new();
@@ -63,16 +70,19 @@ fn parse_multiparam (args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>>{
         let current_arg = args[i];
         if current_arg.starts_with("--") {
             // now we take it and the next word, and skip the next word.
-            if i+1 >= args_len {
+            if i + 1 >= args_len {
                 // there is no room for a value for the argument
-                println!("Invalid argument, no value for argument {} so we are treating it as a boolean flag", args[i]);
+                println!(
+                    "Invalid argument, no value for argument {} so we are treating it as a boolean flag",
+                    args[i]
+                );
                 i += 1;
                 arg_map.insert(current_arg.to_string(), vec![ArgumentFlag::BooleanTrue]);
-                
+
                 continue;
             }
             // There is room for the argument
-            let arg_value = args[i+1];
+            let arg_value = args[i + 1];
             match args[i].strip_prefix("--") {
                 Some(argument_name) => {
                     if argument_name == "" {
@@ -90,21 +100,25 @@ fn parse_multiparam (args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>>{
                     println!("Adding {} to {argument_name}", arg_value);
                     match arg_map.get_mut(argument_name) {
                         Some(mutt) => {
-                            println!("The arg map contained the argument name so we add the new value to the end");
+                            println!(
+                                "The arg map contained the argument name so we add the new value to the end"
+                            );
                             mutt.push(ArgumentFlag::Value(arg_value.to_string()));
-                        },
+                        }
                         None => {
                             println!("Arg map does not contain {}", argument_name);
-                            arg_map.insert(argument_name.to_string(), vec![ArgumentFlag::Value(arg_value.to_string())]);
-                        },
+                            arg_map.insert(
+                                argument_name.to_string(),
+                                vec![ArgumentFlag::Value(arg_value.to_string())]
+                            );
+                        }
                     }
-                },
+                }
                 None => {
-                    println!("The argument name did not contain \"--\"")
-                },
+                    println!("The argument name did not contain \"--\"");
+                }
             }
             i += 2;
-        
         } else {
             // otherwise we call invalid argument and skip it
             println!("Invalid Argument");
@@ -115,12 +129,11 @@ fn parse_multiparam (args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>>{
     arg_map
 }
 
-
 #[derive(Debug)]
 /// This is a simple type for command line arguments
 pub enum ArgumentFlag {
     BooleanTrue,
-    Value(String)
+    Value(String),
 }
 /// Impl block for ArgumentFlag
 impl ArgumentFlag {

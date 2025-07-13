@@ -1,12 +1,17 @@
-
-
 use std::io;
 
-use crate::{ command_line_interface::command_dispatcher::ArgumentFlag, entities::{entity_components::inventory::inventory::Inventory, factories::{entity_base::entity_base::EntityBase, factory::factory::Factory}}, item_utils::{item::item_builder::ItemBuilder, recipe::recipe::Recipe, transport_order::transport_order::TransportOrder}};
-
-
-
-
+use crate::{
+    command_line_interface::command_dispatcher::ArgumentFlag,
+    entities::{
+        entity_components::inventory::inventory::Inventory,
+        factories::{ entity_base::entity_base::EntityBase, factory::factory::Factory },
+    },
+    item_utils::{
+        item::item_builder::ItemBuilder,
+        recipe::recipe::Recipe,
+        transport_order::transport_order::TransportOrder,
+    },
+};
 
 mod item_utils;
 mod entities;
@@ -18,21 +23,20 @@ pub fn main() {
     loop {
         let mut input = String::new();
 
-        io::stdin()
-            .read_line(&mut input)
-            .expect("Failed to read line");
+        io::stdin().read_line(&mut input).expect("Failed to read line");
 
         if input.trim() == "exit" {
             break;
-        }
-        else {
-            command_line_interface::command_dispatcher::parse_and_dispatch_command(&input, &mut recipes);
+        } else {
+            command_line_interface::command_dispatcher::parse_and_dispatch_command(
+                &input,
+                &mut recipes
+            );
         }
     }
 
     compiler_tickles();
 }
-
 
 fn compiler_tickles() {
     let mut fac = Factory::new();

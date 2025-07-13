@@ -1,7 +1,9 @@
-use bincode::{Decode, Encode};
+use bincode::{ Decode, Encode };
 
-use crate::{entities::entity_components::inventory::inventory::Inventory, item_utils::{item::item::Item, transport_order::transport_order::TransportOrder}};
-
+use crate::{
+    entities::entity_components::inventory::inventory::Inventory,
+    item_utils::{ item::item::Item, transport_order::transport_order::TransportOrder },
+};
 
 #[derive(Debug, PartialEq, Clone, Decode, Encode)]
 /// Represents a recipe that holds input items, output items, power cost, processing time, and heat produced
@@ -17,13 +19,20 @@ pub struct Recipe {
     /// How much heat the recipe produces per tick
     heat_produced: u32,
     /// How many ticks the recipe takes to complete
-    processing_time: u32
+    processing_time: u32,
 }
 
 impl Recipe {
     /// Creates an empty recipe with a power draw, processing time, and heat production of 1
     pub fn new() -> Recipe {
-        Recipe { name: String::from("Default"), input_items: Vec::new(), output_items: Vec::new(), power_draw: 1, heat_produced: 1, processing_time: 1}
+        Recipe {
+            name: String::from("Default"),
+            input_items: Vec::new(),
+            output_items: Vec::new(),
+            power_draw: 1,
+            heat_produced: 1,
+            processing_time: 1,
+        }
     }
     /// Returns a vector containing references to all input items
     pub fn input_items(&self) -> &[Item] {
@@ -51,23 +60,23 @@ impl Recipe {
     }
     /// Sets input items
     pub fn set_input_items(&mut self, new_items: Vec<Item>) {
-        self.input_items = new_items
+        self.input_items = new_items;
     }
     /// Sets output items
     pub fn set_output_items(&mut self, new_items: Vec<Item>) {
-        self.output_items = new_items
+        self.output_items = new_items;
     }
     /// Sets power draw
     pub fn set_power_draw(&mut self, new_draw: u32) {
-        self.power_draw = new_draw
+        self.power_draw = new_draw;
     }
     /// Sets heat produced
     pub fn set_heat_produced(&mut self, new_heat_prod: u32) {
-        self.heat_produced = new_heat_prod
+        self.heat_produced = new_heat_prod;
     }
     /// Sets processing time
     pub fn set_processing_time(&mut self, new_processing_time: u32) {
-        self.processing_time = new_processing_time
+        self.processing_time = new_processing_time;
     }
     /// Sets the name
     pub fn set_name(&mut self, new_name: String) {
@@ -77,17 +86,16 @@ impl Recipe {
     pub fn can_be_produced(&self, inv: &Inventory) -> bool {
         for recipe_item in &self.input_items {
             match inv.get(recipe_item.id()) {
-                
                 Some(inventory_item) => {
                     if inventory_item.count() < recipe_item.count() {
-                        return false
+                        return false;
                     }
-                },
+                }
                 _ => {
                     if recipe_item.count() != 0 {
-                        return false
+                        return false;
                     }
-                },
+                }
             }
         }
         true

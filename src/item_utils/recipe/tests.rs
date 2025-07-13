@@ -1,15 +1,14 @@
-
-
-
 #[cfg(test)]
 mod recipe_tests {
-    use crate::{entities::entity_components::inventory::inventory::Inventory, item_utils::{item::item_builder::ItemBuilder, recipe::recipe::Recipe}};
-
+    use crate::{
+        entities::entity_components::inventory::inventory::Inventory,
+        item_utils::{ item::item_builder::ItemBuilder, recipe::recipe::Recipe },
+    };
 
     #[test]
     fn default_values() {
         let recipe = Recipe::new();
-        
+
         assert_eq!(recipe.name(), &String::from("Default"));
         assert_eq!(recipe.input_items(), Vec::new());
         assert_eq!(recipe.output_items(), Vec::new());
@@ -20,14 +19,36 @@ mod recipe_tests {
     #[test]
     fn set_get_input_items() {
         let mut recipe = Recipe::new();
-        recipe.set_input_items([ItemBuilder::new().set_count(5).set_id(1).build(), ItemBuilder::new().set_count(4).set_id(2).build()].to_vec());
-        assert_eq!(recipe.input_items(), [ItemBuilder::new().set_count(5).set_id(1).build(), ItemBuilder::new().set_count(4).set_id(2).build()].to_vec());
+        recipe.set_input_items(
+            [
+                ItemBuilder::new().set_count(5).set_id(1).build(),
+                ItemBuilder::new().set_count(4).set_id(2).build(),
+            ].to_vec()
+        );
+        assert_eq!(
+            recipe.input_items(),
+            [
+                ItemBuilder::new().set_count(5).set_id(1).build(),
+                ItemBuilder::new().set_count(4).set_id(2).build(),
+            ].to_vec()
+        );
     }
     #[test]
     fn set_get_output_items() {
         let mut recipe = Recipe::new();
-        recipe.set_output_items([ItemBuilder::new().set_count(5).set_id(1).build(), ItemBuilder::new().set_count(4).set_id(2).build()].to_vec());
-        assert_eq!(recipe.output_items(), [ItemBuilder::new().set_count(5).set_id(1).build(), ItemBuilder::new().set_count(4).set_id(2).build()].to_vec());
+        recipe.set_output_items(
+            [
+                ItemBuilder::new().set_count(5).set_id(1).build(),
+                ItemBuilder::new().set_count(4).set_id(2).build(),
+            ].to_vec()
+        );
+        assert_eq!(
+            recipe.output_items(),
+            [
+                ItemBuilder::new().set_count(5).set_id(1).build(),
+                ItemBuilder::new().set_count(4).set_id(2).build(),
+            ].to_vec()
+        );
     }
 
     #[test]
@@ -52,9 +73,19 @@ mod recipe_tests {
     #[test]
     fn can_be_produced_returns_true() {
         let mut inv = Inventory::new();
-        inv.add_multiple([ItemBuilder::new().set_count(50).set_id(1).build(), ItemBuilder::new().set_count(25).set_id(2).build()].to_vec());
+        inv.add_multiple(
+            [
+                ItemBuilder::new().set_count(50).set_id(1).build(),
+                ItemBuilder::new().set_count(25).set_id(2).build(),
+            ].to_vec()
+        );
         let mut recipe = Recipe::new();
-        recipe.set_input_items([ItemBuilder::new().set_count(10).set_id(1).build(), ItemBuilder::new().set_count(5).set_id(2).build()].to_vec());
+        recipe.set_input_items(
+            [
+                ItemBuilder::new().set_count(10).set_id(1).build(),
+                ItemBuilder::new().set_count(5).set_id(2).build(),
+            ].to_vec()
+        );
 
         assert!(recipe.can_be_produced(&inv))
     }
@@ -62,16 +93,31 @@ mod recipe_tests {
     fn can_be_produced_returns_false_on_inv_empty() {
         let inv = Inventory::new();
         let mut recipe = Recipe::new();
-        recipe.set_input_items([ItemBuilder::new().set_count(10).set_id(1).build(), ItemBuilder::new().set_count(5).set_id(2).build()].to_vec());
+        recipe.set_input_items(
+            [
+                ItemBuilder::new().set_count(10).set_id(1).build(),
+                ItemBuilder::new().set_count(5).set_id(2).build(),
+            ].to_vec()
+        );
 
         assert!(!recipe.can_be_produced(&inv))
     }
     #[test]
     fn can_be_produced_returns_false_on_not_enough_items() {
         let mut inv = Inventory::new();
-        inv.add_multiple([ItemBuilder::new().set_count(5).set_id(1).build(), ItemBuilder::new().set_count(4).set_id(2).build()].to_vec());
+        inv.add_multiple(
+            [
+                ItemBuilder::new().set_count(5).set_id(1).build(),
+                ItemBuilder::new().set_count(4).set_id(2).build(),
+            ].to_vec()
+        );
         let mut recipe = Recipe::new();
-        recipe.set_input_items([ItemBuilder::new().set_count(10).set_id(1).build(), ItemBuilder::new().set_count(5).set_id(2).build()].to_vec());
+        recipe.set_input_items(
+            [
+                ItemBuilder::new().set_count(10).set_id(1).build(),
+                ItemBuilder::new().set_count(5).set_id(2).build(),
+            ].to_vec()
+        );
 
         assert!(!recipe.can_be_produced(&inv))
     }
@@ -79,9 +125,19 @@ mod recipe_tests {
     #[test]
     fn can_be_produced_returns_false_on_enough_items_except_for_one_stack() {
         let mut inv = Inventory::new();
-        inv.add_multiple([ItemBuilder::new().set_count(20).set_id(1).build(), ItemBuilder::new().set_count(4).set_id(2).build()].to_vec());
+        inv.add_multiple(
+            [
+                ItemBuilder::new().set_count(20).set_id(1).build(),
+                ItemBuilder::new().set_count(4).set_id(2).build(),
+            ].to_vec()
+        );
         let mut recipe = Recipe::new();
-        recipe.set_input_items([ItemBuilder::new().set_count(10).set_id(1).build(), ItemBuilder::new().set_count(5).set_id(2).build()].to_vec());
+        recipe.set_input_items(
+            [
+                ItemBuilder::new().set_count(10).set_id(1).build(),
+                ItemBuilder::new().set_count(5).set_id(2).build(),
+            ].to_vec()
+        );
 
         assert!(!recipe.can_be_produced(&inv))
     }
@@ -90,7 +146,12 @@ mod recipe_tests {
         let mut inv = Inventory::new();
         inv.add_multiple([ItemBuilder::new().set_count(20).set_id(2).build()].to_vec());
         let mut recipe = Recipe::new();
-        recipe.set_input_items([ItemBuilder::new().set_count(0).set_id(1).build(), ItemBuilder::new().set_count(5).set_id(2).build()].to_vec());
+        recipe.set_input_items(
+            [
+                ItemBuilder::new().set_count(0).set_id(1).build(),
+                ItemBuilder::new().set_count(5).set_id(2).build(),
+            ].to_vec()
+        );
 
         assert!(recipe.can_be_produced(&inv))
     }
@@ -98,23 +159,33 @@ mod recipe_tests {
     #[test]
     fn can_be_produced_ignores_extra_items() {
         let mut inv = Inventory::new();
-        inv.add_multiple([ItemBuilder::new().set_count(20).set_id(1).build(), ItemBuilder::new().set_count(5).set_id(2).build()].to_vec());
+        inv.add_multiple(
+            [
+                ItemBuilder::new().set_count(20).set_id(1).build(),
+                ItemBuilder::new().set_count(5).set_id(2).build(),
+            ].to_vec()
+        );
         let mut recipe = Recipe::new();
         recipe.set_input_items([ItemBuilder::new().set_count(5).set_id(1).build()].to_vec());
 
         assert!(recipe.can_be_produced(&inv))
     }
 
-    #[test] 
+    #[test]
     fn can_be_produced_empty_recipe_returns_true_on_filled_inventory() {
         let mut inv = Inventory::new();
-        inv.add_multiple([ItemBuilder::new().set_count(20).set_id(1).build(), ItemBuilder::new().set_count(5).set_id(2).build()].to_vec());
+        inv.add_multiple(
+            [
+                ItemBuilder::new().set_count(20).set_id(1).build(),
+                ItemBuilder::new().set_count(5).set_id(2).build(),
+            ].to_vec()
+        );
         let recipe = Recipe::new();
 
         assert!(recipe.can_be_produced(&inv))
     }
 
-    #[test] 
+    #[test]
     fn can_be_produced_empty_recipe_returns_true_on_empty_inventory() {
         let inv = Inventory::new();
         let recipe = Recipe::new();
@@ -125,16 +196,15 @@ mod recipe_tests {
     #[test]
     fn input_items_as_transport_order_multiple_values_mixed_zero_and_non_zero() {
         let mut recipe = Recipe::new();
-        recipe.set_input_items([
-            ItemBuilder::new().set_count(20).set_id(1).build(),
-            ItemBuilder::new().set_count(0).set_id(2).build(),
-        ].to_vec());
+        recipe.set_input_items(
+            [
+                ItemBuilder::new().set_count(20).set_id(1).build(),
+                ItemBuilder::new().set_count(0).set_id(2).build(),
+            ].to_vec()
+        );
         let t_order = recipe.input_items_as_transport_order();
 
-        assert_eq!(
-            t_order.items(),
-            &[ItemBuilder::new().set_count(20).set_id(1).build()].to_vec()
-        );
+        assert_eq!(t_order.items(), &[ItemBuilder::new().set_count(20).set_id(1).build()].to_vec());
     }
 
     #[test]
@@ -143,10 +213,7 @@ mod recipe_tests {
         recipe.set_input_items([ItemBuilder::new().set_count(20).set_id(1).build()].to_vec());
         let t_order = recipe.input_items_as_transport_order();
 
-        assert_eq!(
-            t_order.items(),
-            &[ItemBuilder::new().set_count(20).set_id(1).build()].to_vec()
-        );
+        assert_eq!(t_order.items(), &[ItemBuilder::new().set_count(20).set_id(1).build()].to_vec());
     }
 
     #[test]
@@ -161,10 +228,12 @@ mod recipe_tests {
     #[test]
     fn input_items_as_transport_order_multiple_nonzero_values() {
         let mut recipe = Recipe::new();
-        recipe.set_input_items([
-            ItemBuilder::new().set_count(20).set_id(1).build(),
-            ItemBuilder::new().set_count(20).set_id(2).build(),
-        ].to_vec());
+        recipe.set_input_items(
+            [
+                ItemBuilder::new().set_count(20).set_id(1).build(),
+                ItemBuilder::new().set_count(20).set_id(2).build(),
+            ].to_vec()
+        );
         let t_order = recipe.input_items_as_transport_order();
 
         assert_eq!(
@@ -179,16 +248,15 @@ mod recipe_tests {
     #[test]
     fn output_items_as_transport_order_multiple_values_mixed_zero_and_non_zero() {
         let mut recipe = Recipe::new();
-        recipe.set_output_items([
-            ItemBuilder::new().set_count(20).set_id(1).build(),
-            ItemBuilder::new().set_count(0).set_id(2).build(),
-        ].to_vec());
+        recipe.set_output_items(
+            [
+                ItemBuilder::new().set_count(20).set_id(1).build(),
+                ItemBuilder::new().set_count(0).set_id(2).build(),
+            ].to_vec()
+        );
         let t_order = recipe.output_items_as_transport_order();
 
-        assert_eq!(
-            t_order.items(),
-            &[ItemBuilder::new().set_count(20).set_id(1).build()].to_vec()
-        );
+        assert_eq!(t_order.items(), &[ItemBuilder::new().set_count(20).set_id(1).build()].to_vec());
     }
 
     #[test]
@@ -197,10 +265,7 @@ mod recipe_tests {
         recipe.set_output_items([ItemBuilder::new().set_count(20).set_id(1).build()].to_vec());
         let t_order = recipe.output_items_as_transport_order();
 
-        assert_eq!(
-            t_order.items(),
-            &[ItemBuilder::new().set_count(20).set_id(1).build()].to_vec()
-        );
+        assert_eq!(t_order.items(), &[ItemBuilder::new().set_count(20).set_id(1).build()].to_vec());
     }
 
     #[test]
@@ -215,10 +280,12 @@ mod recipe_tests {
     #[test]
     fn output_items_as_transport_order_multiple_nonzero_values() {
         let mut recipe = Recipe::new();
-        recipe.set_output_items([
-            ItemBuilder::new().set_count(20).set_id(1).build(),
-            ItemBuilder::new().set_count(20).set_id(2).build(),
-        ].to_vec());
+        recipe.set_output_items(
+            [
+                ItemBuilder::new().set_count(20).set_id(1).build(),
+                ItemBuilder::new().set_count(20).set_id(2).build(),
+            ].to_vec()
+        );
         let t_order = recipe.output_items_as_transport_order();
 
         assert_eq!(
@@ -229,5 +296,4 @@ mod recipe_tests {
             ].to_vec()
         );
     }
-    
 }

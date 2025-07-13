@@ -2,14 +2,11 @@ use std::collections::HashMap;
 
 use crate::command_line_interface::command_dispatcher::ArgumentFlag;
 
-
-
 /// Represents a command, holds a command name and a hashmap of arguments
 pub struct Command {
     name: String,
-    args: HashMap<String, Vec<ArgumentFlag>>
+    args: HashMap<String, Vec<ArgumentFlag>>,
 }
-
 
 /// Impl block for Command. Contains setters, getters and new()
 impl Command {
@@ -17,7 +14,7 @@ impl Command {
         Command { name: String::from("error"), args: HashMap::new() }
     }
     pub fn set_name(&mut self, new_name: String) {
-        self.name = new_name
+        self.name = new_name;
     }
     pub fn name(&self) -> String {
         self.name.to_string()

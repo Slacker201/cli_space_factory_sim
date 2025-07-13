@@ -1,15 +1,13 @@
 use crate::item_utils::item::item::Item;
 
-
 #[derive(Debug)]
 /// A transport order representing a list of items and a boolean
 pub struct TransportOrder {
     /// The items to move
     items: Vec<Item>,
     /// Whether to fill up the inventory completely or cancel the trade if there is not enough room
-    saturate_inv: bool
+    saturate_inv: bool,
 }
-
 
 impl TransportOrder {
     /// Generates a transport order with no items and saturate inventory set to true

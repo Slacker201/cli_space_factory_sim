@@ -1,12 +1,11 @@
-
-
-
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
 
-    use crate::{entities::entity_components::inventory::inventory::Inventory, item_utils::item::{item::Item, item_builder::ItemBuilder}};
-
+    use crate::{
+        entities::entity_components::inventory::inventory::Inventory,
+        item_utils::item::{ item::Item, item_builder::ItemBuilder },
+    };
 
     #[test]
     fn default_values() {
@@ -35,8 +34,6 @@ mod tests {
         assert_eq!(true, inv.add(ItemBuilder::new().set_count(1).set_id(1).build()).0);
     }
 
-    
-
     #[test]
     fn add_item_correct_values() {
         let mut inv = Inventory::new();
@@ -50,7 +47,7 @@ mod tests {
         assert_eq!(item.id(), 1);
     }
 
-    #[test] 
+    #[test]
     fn get_mut_mutability() {
         let mut inv = Inventory::new();
         inv.add(ItemBuilder::new().set_count(1).set_id(1).build());
@@ -83,5 +80,4 @@ mod tests {
         inv.clear();
         assert!(inv.items().is_empty())
     }
-
 }

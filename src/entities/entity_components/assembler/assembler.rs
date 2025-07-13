@@ -1,5 +1,10 @@
-use crate::{entities::entity_components::{assembler::processing_state::ProcessingState, inventory::inventory::Inventory}, item_utils::recipe::recipe::Recipe};
-
+use crate::{
+    entities::entity_components::{
+        assembler::processing_state::ProcessingState,
+        inventory::inventory::Inventory,
+    },
+    item_utils::recipe::recipe::Recipe,
+};
 
 /// The assembler module for a factory. This module converts items to other items
 pub struct Assembler {
@@ -12,13 +17,19 @@ pub struct Assembler {
     /// The recipe to craft
     recipe: Recipe,
     /// The counter that determines when to add items to the output inventory and move items from the input to the processing inventory
-    processing_state: ProcessingState
+    processing_state: ProcessingState,
 }
 
 impl Assembler {
     /// Generates a new assembler with an empty input inventory, an empty processing inventory, an empty output inventory, an empty recipe, and Idle for processing Timer
     pub fn new() -> Assembler {
-        Assembler { input_inventory: Inventory::new(), processing_inventory: Inventory::new(), output_inventory: Inventory::new(), recipe: Recipe::new(), processing_state: ProcessingState::Idle }
+        Assembler {
+            input_inventory: Inventory::new(),
+            processing_inventory: Inventory::new(),
+            output_inventory: Inventory::new(),
+            recipe: Recipe::new(),
+            processing_state: ProcessingState::Idle,
+        }
     }
     /// Returns a reference to the input inventory
     pub fn input_inventory(&self) -> &Inventory {
@@ -94,10 +105,10 @@ impl Assembler {
                 if self.recipe.can_be_produced(&self.input_inventory) {
                     self.start_processing();
                     if self.recipe().processing_time() <= 1 {
-                    self.end_processing();
+                        self.end_processing();
+                    }
                 }
-                }
-            },
+            }
             ProcessingState::Processing(val) => {
                 if val + 1 >= self.recipe.processing_time() {
                     self.end_processing();
@@ -109,7 +120,7 @@ impl Assembler {
                     self.set_processing_state(ProcessingState::Processing(val + 1));
                     return; // Skip expensive checks while still processing
                 }
-            },
+            }
         }
     }
 
@@ -117,7 +128,7 @@ impl Assembler {
     fn start_processing(&mut self) {
         self.input_inventory.move_items_to(
             self.recipe.input_items_as_transport_order(),
-            &mut self.processing_inventory,
+            &mut self.processing_inventory
         );
         self.set_processing_state(ProcessingState::Processing(1));
     }
@@ -125,9 +136,10 @@ impl Assembler {
     // another helper for tick func
     fn end_processing(&mut self) {
         // Finished processing
-        self.output_inventory.add_multiple(self.recipe.output_items().into_iter().cloned().collect());
+        self.output_inventory.add_multiple(
+            self.recipe.output_items().into_iter().cloned().collect()
+        );
         self.processing_inventory.clear();
         self.set_processing_state(ProcessingState::Idle);
     }
-
 }

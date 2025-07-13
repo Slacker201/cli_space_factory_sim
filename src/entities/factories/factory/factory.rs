@@ -1,10 +1,13 @@
-use crate::{entities::{entity_components::{assembler::assembler::Assembler, inventory::inventory::Inventory}, factories::entity_base::entity_base::EntityBase}, item_utils::transport_order::transport_order::TransportOrder};
-
-
-
+use crate::{
+    entities::{
+        entity_components::{ assembler::assembler::Assembler, inventory::inventory::Inventory },
+        factories::entity_base::entity_base::EntityBase,
+    },
+    item_utils::transport_order::transport_order::TransportOrder,
+};
 
 pub struct Factory {
-    assembler: Assembler
+    assembler: Assembler,
 }
 
 impl Factory {
