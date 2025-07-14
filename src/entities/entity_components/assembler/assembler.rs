@@ -117,7 +117,7 @@ impl Assembler {
                     }
                 } else {
                     self.set_processing_state(ProcessingState::Processing(val + 1));
-                    return; // Skip expensive checks while still processing
+                    // Skip expensive checks while still processing
                 }
             }
         }
@@ -136,7 +136,7 @@ impl Assembler {
     fn end_processing(&mut self) {
         // Finished processing
         self.output_inventory
-            .add_multiple(self.recipe.output_items().into_iter().cloned().collect());
+            .add_multiple(self.recipe.output_items().to_vec());
         self.processing_inventory.clear();
         self.set_processing_state(ProcessingState::Idle);
     }

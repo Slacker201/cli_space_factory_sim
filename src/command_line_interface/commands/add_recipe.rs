@@ -1,25 +1,27 @@
 use crate::{
     command_line_interface::command_struct::Command,
+    error, info,
     item_utils::{
         item::{item::Item, item_builder::ItemBuilder},
         recipe::recipe::Recipe,
     },
+    warn,
 };
 
 /// This adds a recipe to the recipe vector if it has the correct arguments. Otherwise it fails
 pub fn add_recipe_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
-    println!("Adding Recipe");
+    info!(": [add_recipe] Adding recipe");
     let input_items = match get_item_args("input_item", &cmd) {
         Some(items) => items,
         None => {
-            println!("No input item arguments found");
+            error!("No input item arguments found");
             return;
         }
     };
     let output_items = match get_item_args("output_item", &cmd) {
         Some(items) => items,
         None => {
-            println!("No output item arguments found");
+            error!("No output item arguments found");
             return;
         }
     };
@@ -28,12 +30,12 @@ pub fn add_recipe_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
         Some(str) => match str.parse::<u32>() {
             Ok(val) => val,
             Err(e) => {
-                println!("Could not parse {}, error was {}", str, e);
+                error!("Could not parse {}, error was {}", str, e);
                 return;
             }
         },
         None => {
-            println!("Argument processing1 time not found");
+            error!("Argument processing1 time not found");
             return;
         }
     };
@@ -42,12 +44,12 @@ pub fn add_recipe_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
         Some(str) => match str.parse::<u32>() {
             Ok(val) => val,
             Err(e) => {
-                println!("Could not parse {}, error was {}", str, e);
+                error!("Could not parse {}, error was {}", str, e);
                 return;
             }
         },
         None => {
-            println!("Argument heat produced not found");
+            error!("Argument heat produced not found");
             return;
         }
     };
@@ -55,19 +57,19 @@ pub fn add_recipe_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
         Some(str) => match str.parse::<u32>() {
             Ok(val) => val,
             Err(e) => {
-                println!("Could not parse {}, error was {}", str, e);
+                error!("Could not parse {}, error was {}", str, e);
                 return;
             }
         },
         None => {
-            println!("Argument power draw not found");
+            error!("Argument power draw not found");
             return;
         }
     };
     let name = match get_single_arg("name", &cmd) {
         Some(str) => str.replace("^", " "),
         None => {
-            println!("Argument name not found");
+            error!("Argument name not found");
             return;
         }
     };
@@ -78,7 +80,7 @@ pub fn add_recipe_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
     recipe.set_heat_produced(heat_produced_per_tick);
     recipe.set_name(name);
     recipe.set_power_draw(power_draw);
-    println!("{:?}", recipe);
+    info!("{:?}", recipe);
     recipes.push(recipe);
 }
 
@@ -90,7 +92,7 @@ fn get_item_args(argument_name: &str, cmd: &Command) -> Option<Vec<Item>> {
             for arg in argument_list {
                 match arg {
                     crate::command_line_interface::command_dispatcher::ArgumentFlag::BooleanTrue => {
-                        println!(
+                        warn!(
                             "The argument value given is not an item. The correct format is id:count"
                         );
                     }
@@ -99,37 +101,35 @@ fn get_item_args(argument_name: &str, cmd: &Command) -> Option<Vec<Item>> {
                     ) => {
                         let arg_parts: Vec<&str> = id_count_amalgamation.split(':').collect();
                         if arg_parts.len() != 2 {
-                            println!("Invalid item format. The correct format is id:count");
-                            return None;
+                            warn!("Invalid item format. The correct format is id:count");
+                            continue;
                         }
-                        let id;
-                        let count;
-                        match arg_parts[0].parse::<u64>() {
+                        let id = match arg_parts[0].parse::<u64>() {
                             Ok(parsed_id) => {
-                                id = parsed_id;
+                                parsed_id
                             }
                             Err(e) => {
-                                println!(
+                                warn!(
                                     "Error parsing the count of {}. Error is {}",
                                     id_count_amalgamation,
                                     e
                                 );
-                                return None;
+                                continue;
                             }
-                        }
-                        match arg_parts[1].parse::<u128>() {
+                        };
+                        let count = match arg_parts[1].parse::<u128>() {
                             Ok(parsed_count) => {
-                                count = parsed_count;
+                                parsed_count
                             }
                             Err(e) => {
-                                println!(
+                                warn!(
                                     "Error parsing the count of {}. Error is {}",
                                     id_count_amalgamation,
                                     e
                                 );
-                                return None;
+                                continue;
                             }
-                        }
+                        };
 
                         input_items.push(ItemBuilder::new().set_count(count).set_id(id).build());
                     }
@@ -137,7 +137,7 @@ fn get_item_args(argument_name: &str, cmd: &Command) -> Option<Vec<Item>> {
             }
         }
         None => {
-            println!("No items given");
+            warn!("No items given");
             return None;
         }
     }
@@ -146,12 +146,10 @@ fn get_item_args(argument_name: &str, cmd: &Command) -> Option<Vec<Item>> {
 /// This returns the last argument for a given argument name, or nothing if its not found
 fn get_single_arg(argument_name: &str, cmd: &Command) -> Option<String> {
     match cmd.args().get(argument_name) {
-        Some(names) => {
-            return Some(names.get(names.len() - 1)?.to_string());
-        }
+        Some(names) => Some(names.last()?.to_string()),
         None => {
-            println!("Argument {} not found", argument_name);
-            return None;
+            error!("Argument {} not found", argument_name);
+            None
         }
     }
 }

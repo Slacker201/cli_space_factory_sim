@@ -9,7 +9,7 @@ static CFG: config::Configuration = bincode::config::standard();
 pub fn save_recipes_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
     match cmd.args().get("location") {
         Some(loc) => {
-            let location = match loc.get(0) {
+            let location = match loc.first() {
                 Some(location) =>
                     match location {
                         crate::command_line_interface::command_dispatcher::ArgumentFlag::BooleanTrue => {
@@ -43,7 +43,7 @@ fn write_to_location(loc: &str, recipes: &Vec<Recipe>) {
             file
         }
         Err(e) => {
-            println!("Failed to open file: {}", e);
+            println!("Failed to open file: {e}");
             return;
         }
     };
@@ -52,12 +52,11 @@ fn write_to_location(loc: &str, recipes: &Vec<Recipe>) {
             let write_to_file_error = target_file.write_all(&encoded_data);
 
             if write_to_file_error.is_err() {
-                println!("Error writing to file: {:?}", write_to_file_error)
+                println!("Error writing to file: {write_to_file_error:?}")
             }
         }
         Err(e) => {
-            println!("Error encoding data: {:?}", e);
-            return;
+            println!("Error encoding data: {e}");
         }
     };
 }

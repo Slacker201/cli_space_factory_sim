@@ -47,6 +47,6 @@ impl Item {
     }
     /// Getter for the item name
     pub fn name(&self) -> Option<&str> {
-        ITEM_NAMES.get(self.id as usize).map(|&name| name)
+        ITEM_NAMES.get(self.id as usize).copied()
     }
 }

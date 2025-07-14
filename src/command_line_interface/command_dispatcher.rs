@@ -1,4 +1,5 @@
-use std::collections::HashMap;
+use core::fmt;
+use std::{collections::HashMap, fmt::Display};
 
 use crate::{
     command_line_interface::{
@@ -21,14 +22,14 @@ pub fn parse_and_dispatch_command(comd: &str, recipes: &mut Vec<Recipe>) {
     }
     let parts: Vec<&str> = cmd.split_whitespace().collect();
 
-    match parts.get(0) {
+    match parts.first() {
         Some(name) => {
             command.set_name(name.to_string());
 
             let args = &parts[1..];
 
             let arg_map = parse_multiparam(args);
-            println!("{:?}", arg_map);
+            println!("{arg_map:?}");
             command.set_args(arg_map);
             dispatch_command(command, recipes);
         }
@@ -62,7 +63,7 @@ fn dispatch_command(cmd: Command, recipes: &mut Vec<Recipe>) {
 /// This takes a &str array and returns a hashmap of (argument names, argument flag vectors)
 fn parse_multiparam(args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>> {
     println!("printing");
-    println!("{:?}", args);
+    println!("{args:?}");
     let mut arg_map: HashMap<String, Vec<ArgumentFlag>> = HashMap::new();
     let mut i = 0;
     let args_len = args.len();
@@ -85,22 +86,21 @@ fn parse_multiparam(args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>> {
             let arg_value = args[i + 1];
             match args[i].strip_prefix("--") {
                 Some(argument_name) => {
-                    if argument_name == "" {
+                    if argument_name.is_empty() {
                         println!("Argument name was empty");
                         i += 1;
                         continue;
                     }
                     if arg_value.starts_with("--") {
                         println!(
-                            "{}'s value started with \"--\", so we are treating it as a boolean flag",
-                            argument_name
+                            "{argument_name}'s value started with \"--\", so we are treating it as a boolean flag"
                         );
                         i += 1;
                         arg_map.insert(argument_name.to_string(), vec![ArgumentFlag::BooleanTrue]);
                         continue;
                     }
                     println!("The argument name contained \"--\"");
-                    println!("Adding {} to {argument_name}", arg_value);
+                    println!("Adding {arg_value} to {argument_name}");
                     match arg_map.get_mut(argument_name) {
                         Some(mutt) => {
                             println!(
@@ -109,7 +109,7 @@ fn parse_multiparam(args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>> {
                             mutt.push(ArgumentFlag::Value(arg_value.to_string()));
                         }
                         None => {
-                            println!("Arg map does not contain {}", argument_name);
+                            println!("Arg map does not contain {argument_name}");
                             arg_map.insert(
                                 argument_name.to_string(),
                                 vec![ArgumentFlag::Value(arg_value.to_string())],
@@ -139,19 +139,12 @@ pub enum ArgumentFlag {
     Value(String),
 }
 /// Impl block for ArgumentFlag
-impl ArgumentFlag {
-    /// Returns the string value of the argument. Returns True if the flag is BooleanTrue and the string value if it is Value
-    pub fn to_string(&self) -> String {
-        match self {
-            ArgumentFlag::BooleanTrue => String::from("True"),
-            ArgumentFlag::Value(val) => val.clone(),
-        }
-    }
-    /// Returns the string value of the argument. Returns True if the flag is BooleanTrue and the string value if it is Value. Consumes the argument
-    pub fn to_string_consume(self) -> String {
-        match self {
-            ArgumentFlag::BooleanTrue => String::from("True"),
-            ArgumentFlag::Value(val) => val,
-        }
+impl Display for ArgumentFlag {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let val = match self {
+            ArgumentFlag::BooleanTrue => "True",
+            ArgumentFlag::Value(a) => a,
+        };
+        write!(f, "{val}")
     }
 }

@@ -1,7 +1,6 @@
 use std::io;
 
 use crate::{
-    command_line_interface::command_dispatcher::ArgumentFlag,
     entities::{
         entity_components::inventory::inventory::Inventory,
         factories::{entity_base::entity_base::EntityBase, factory::factory::Factory},
@@ -10,13 +9,19 @@ use crate::{
         item::item_builder::ItemBuilder, recipe::recipe::Recipe,
         transport_order::transport_order::TransportOrder,
     },
+    logging::logger::{self, LoggingLevels::*},
 };
 
 mod command_line_interface;
 mod data_handling;
 mod entities;
 mod item_utils;
+mod logging;
 pub fn main() {
+    logger::set_params(vec![Info(true), Warn(true)]);
+    info!("Testing");
+    warn!("HELP ME");
+    error!("Program died");
     println!("Enter your command. Type exit to exit program");
     let mut recipes = Vec::<Recipe>::new();
     loop {
@@ -44,14 +49,12 @@ fn compiler_tickles() {
     let mut inv = Inventory::new();
     let mut t_order = TransportOrder::new();
     let mut rec = Recipe::new();
-    let arg_flag = ArgumentFlag::Value("Heya Bob".to_string());
     let t_order2 = TransportOrder::new();
     let i_b = ItemBuilder::new().set_count(1).set_id(1);
     let i_b2 = ItemBuilder::new().set_count(1).set_id(1);
     let i_b3 = ItemBuilder::new().set_count(1).set_id(1);
     let i_b4 = ItemBuilder::new().set_count(1).set_id(1);
     let i_b5 = ItemBuilder::new().set_count(1).set_id(1);
-    arg_flag.to_string_consume();
     let assembler = fac.get_assembler_mut();
     i_b5.build().name();
     t_order.saturate_inv();

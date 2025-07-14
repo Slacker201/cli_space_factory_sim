@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use std::collections::HashMap;
 
 use crate::item_utils::{
@@ -106,8 +104,7 @@ impl Inventory {
             }
             Some(_) => {
                 // Item count is less than or equal to requested removal count
-                let removed = self.remove_by_id(id);
-                removed
+                self.remove_by_id(id)
             }
             None => None,
         }
@@ -137,11 +134,8 @@ impl Inventory {
                     let item_count = item.count();
 
                     // Attempt to remove the specified count of the item from source inventory
-                    match self.remove_by_id_and_count(item_id, item_count) {
-                        Some(removed_item) => {
-                            tar_inv.add(removed_item);
-                        }
-                        None => {}
+                    if let Some(removed_item) = self.remove_by_id_and_count(item_id, item_count) {
+                        tar_inv.add(removed_item);
                     }
                 }
                 None => {

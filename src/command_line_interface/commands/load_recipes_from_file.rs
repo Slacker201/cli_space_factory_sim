@@ -2,18 +2,21 @@ use std::{fs::File, io::Read};
 
 use bincode::config::{self};
 
-use crate::{command_line_interface::command_struct::Command, item_utils::recipe::recipe::Recipe};
+use crate::{
+    command_line_interface::command_struct::Command, error, info,
+    item_utils::recipe::recipe::Recipe,
+};
 
 static CFG: config::Configuration = bincode::config::standard();
 /// This loads the recipe vector from the given location, if the location is not given it uses "assets/recipe.sgs"
 pub fn load_recipes_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
     match cmd.args().get("location") {
         Some(loc) => {
-            let location = match loc.get(0) {
+            let location = match loc.first() {
                 Some(location) =>
                     match location {
                         crate::command_line_interface::command_dispatcher::ArgumentFlag::BooleanTrue => {
-                            println!("Value was a boolean flag");
+                            error!("Value was a boolean flag");
                             return;
                         }
                         crate::command_line_interface::command_dispatcher::ArgumentFlag::Value(
@@ -23,7 +26,7 @@ pub fn load_recipes_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
                         }
                     }
                 None => {
-                    println!("Location has no value");
+                    error!("Location has no value");
                     return;
                 }
             };
@@ -40,7 +43,7 @@ fn load_from_location(loc: &str, recipes: &mut Vec<Recipe>) {
     let mut a = match File::open(loc) {
         Ok(file1) => file1,
         Err(e) => {
-            println!("Error opening file: {}", e);
+            error!("Error opening file: {}", e);
             return;
         }
     };
@@ -50,12 +53,12 @@ fn load_from_location(loc: &str, recipes: &mut Vec<Recipe>) {
         bincode::decode_from_slice(&buffer, CFG);
     match decoded_data {
         Ok(decoded) => {
-            println!("Decoded Recipes");
-            println!("{:?}", decoded.0);
+            info!("Decoded Recipes");
+            info!("{:?}", decoded.0);
             *recipes = decoded.0;
         }
         Err(e) => {
-            println!("Error decoding recipes: {}", e)
+            error!("Error decoding recipes: {}", e)
         }
     }
 }
