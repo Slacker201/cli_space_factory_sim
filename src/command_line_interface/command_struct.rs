@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
-use crate::command_line_interface::command_dispatcher::ArgumentFlag;
+use crate::command_line_interface::argument_flag::ArgumentFlag;
+
 
 /// Represents a command, holds a command name and a hashmap of arguments
 pub struct Command {

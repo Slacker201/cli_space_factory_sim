@@ -1,13 +1,12 @@
 use core::fmt;
-use std::{collections::HashMap, fmt::Display};
+use std::collections::HashMap;
 
 use crate::{
     command_line_interface::{
-        command_struct::Command,
-        commands::{
+        argument_flag::ArgumentFlag, command_struct::Command, commands::{
             add_recipe::add_recipe_cmd, load_recipes_from_file::load_recipes_cmd,
             save_recipes_to_file::save_recipes_cmd, view_recipe::view_recipes_cmd,
-        },
+        }
     },
     item_utils::recipe::recipe::Recipe,
 };
@@ -132,19 +131,4 @@ fn parse_multiparam(args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>> {
     arg_map
 }
 
-#[derive(Debug)]
-/// This is a simple type for command line arguments
-pub enum ArgumentFlag {
-    BooleanTrue,
-    Value(String),
-}
-/// Impl block for ArgumentFlag
-impl Display for ArgumentFlag {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let val = match self {
-            ArgumentFlag::BooleanTrue => "True",
-            ArgumentFlag::Value(a) => a,
-        };
-        write!(f, "{val}")
-    }
-}
+

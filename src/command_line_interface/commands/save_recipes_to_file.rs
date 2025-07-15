@@ -12,11 +12,11 @@ pub fn save_recipes_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
             let location = match loc.first() {
                 Some(location) =>
                     match location {
-                        crate::command_line_interface::command_dispatcher::ArgumentFlag::BooleanTrue => {
+                        crate::command_line_interface::argument_flag::ArgumentFlag::BooleanTrue => {
                             println!("Value was a boolean flag");
                             return;
                         }
-                        crate::command_line_interface::command_dispatcher::ArgumentFlag::Value(
+                        crate::command_line_interface::argument_flag::ArgumentFlag::Value(
                             var,
                         ) => {
                             var
@@ -27,7 +27,7 @@ pub fn save_recipes_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
                     return;
                 }
             };
-            write_to_location(location, recipes);
+            write_to_location(&location, recipes);
         }
         None => {
             write_to_location("assets/recipe.sgs", recipes);

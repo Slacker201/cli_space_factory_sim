@@ -3,7 +3,7 @@ use std::{fs::File, io::Read};
 use bincode::config::{self};
 
 use crate::{
-    command_line_interface::command_struct::Command, error, info,
+    command_line_interface::{self, command_struct::Command}, error, info,
     item_utils::recipe::recipe::Recipe,
 };
 
@@ -15,11 +15,11 @@ pub fn load_recipes_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
             let location = match loc.first() {
                 Some(location) =>
                     match location {
-                        crate::command_line_interface::command_dispatcher::ArgumentFlag::BooleanTrue => {
+                        command_line_interface::argument_flag::ArgumentFlag::BooleanTrue => {
                             error!("Value was a boolean flag");
                             return;
                         }
-                        crate::command_line_interface::command_dispatcher::ArgumentFlag::Value(
+                        command_line_interface::argument_flag::ArgumentFlag::Value(
                             var,
                         ) => {
                             var
@@ -30,7 +30,7 @@ pub fn load_recipes_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
                     return;
                 }
             };
-            load_from_location(location, recipes);
+            load_from_location(&location, recipes);
         }
         None => {
             load_from_location("assets/recipe.sgs", recipes);

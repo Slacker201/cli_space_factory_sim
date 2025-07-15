@@ -91,12 +91,12 @@ fn get_item_args(argument_name: &str, cmd: &Command) -> Option<Vec<Item>> {
         Some(argument_list) => {
             for arg in argument_list {
                 match arg {
-                    crate::command_line_interface::command_dispatcher::ArgumentFlag::BooleanTrue => {
+                    crate::command_line_interface::argument_flag::ArgumentFlag::BooleanTrue=> {
                         warn!(
                             "The argument value given is not an item. The correct format is id:count"
                         );
                     }
-                    crate::command_line_interface::command_dispatcher::ArgumentFlag::Value(
+                    crate::command_line_interface::argument_flag::ArgumentFlag::Value(
                         id_count_amalgamation,
                     ) => {
                         let arg_parts: Vec<&str> = id_count_amalgamation.split(':').collect();
