@@ -1,6 +1,6 @@
 use std::fmt::{self, Display};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 /// This is a simple type for command line arguments
 pub enum ArgumentFlag {
     BooleanTrue,
