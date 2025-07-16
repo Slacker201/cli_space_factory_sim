@@ -58,7 +58,7 @@ fn dispatch_command(cmd: Command, recipes: &mut Vec<Recipe>) {
     }
 }
 /// This takes a &str array and returns a hashmap of (argument names, argument flag vectors)
-pub fn parse_multiparam(args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>> {
+pub(crate) fn parse_multiparam(args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>> {
     println!("printing");
     println!("{args:?}");
     let mut arg_map: HashMap<String, Vec<ArgumentFlag>> = HashMap::new();
