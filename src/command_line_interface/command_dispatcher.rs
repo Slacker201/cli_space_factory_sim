@@ -8,8 +8,7 @@ use crate::{
             add_recipe::add_recipe_cmd, load_recipes_from_file::load_recipes_cmd,
             save_recipes_to_file::save_recipes_cmd, view_recipe::view_recipes_cmd,
         },
-    },
-    item_utils::recipe::recipe::Recipe,
+    }, error, info, item_utils::recipe::recipe::Recipe, warn
 };
 
 /// This splits the command into tokens and runs them through a parser before dispatching the command
@@ -26,19 +25,19 @@ pub fn parse_and_dispatch_command(comd: &str, recipes: &mut Vec<Recipe>) {
             let args = &parts[1..];
 
             let arg_map = parse_multiparam(args);
-            println!("{arg_map:?}");
+            info!("{arg_map:?}");
             command.set_args(arg_map);
             dispatch_command(command, recipes);
         }
         None => {
-            println!("Unknown Command2");
+            error!("Command was empty");
         }
     }
 }
 
 /// This uses a switch statement on the command name to run a command
 fn dispatch_command(cmd: Command, recipes: &mut Vec<Recipe>) {
-    println!("Dispatching command");
+    info!("Dispatching command");
     match cmd.name().to_lowercase().as_str() {
         "add_recipe" => {
             add_recipe_cmd(cmd, recipes);
@@ -53,14 +52,14 @@ fn dispatch_command(cmd: Command, recipes: &mut Vec<Recipe>) {
             save_recipes_cmd(cmd, recipes);
         }
         _ => {
-            println!("Unknown command3")
+            error!("Unknown Command on command dispatch")
         }
     }
 }
 /// This takes a &str array and returns a hashmap of (argument names, argument flag vectors)
 pub(crate) fn parse_multiparam(args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>> {
-    println!("printing");
-    println!("{args:?}");
+    info!("printing");
+    info!("{args:?}");
     let mut arg_map: HashMap<String, Vec<ArgumentFlag>> = HashMap::new();
     let mut i = 0;
     let args_len = args.len();
@@ -70,19 +69,19 @@ pub(crate) fn parse_multiparam(args: &[&str]) -> HashMap<String, Vec<ArgumentFla
             // now we take it and the next word, and skip the next word.
             if i + 1 >= args_len {
                 // there is no room for a value for the argument
-                println!(
+                warn!(
                     "Invalid argument, no value for argument {} so we are treating it as a boolean flag",
                     args[i]
                 );
                 i += 1;
                 match current_arg.strip_prefix("--") {
                     Some(found) => {
-                        println!("New arg is \"{}\"", found);
+                        info!("New arg is \"{}\"", found);
                         arg_map.insert(found.to_string(), vec![ArgumentFlag::BooleanTrue]);
                         continue;
                     }
                     None => {
-                        println!("Did not add argument bcuz it was None when prefix was stripped");
+                        warn!("Did not add argument bcuz it was None when prefix was stripped");
                         continue;
                     }
                 }
@@ -92,32 +91,32 @@ pub(crate) fn parse_multiparam(args: &[&str]) -> HashMap<String, Vec<ArgumentFla
             match args[i].strip_prefix("--") {
                 Some(argument_name) => {
                     if argument_name.is_empty() {
-                        println!("Argument name was empty");
+                        warn!("Argument name was empty");
                         i += 1;
                         continue;
                     }
                     if arg_value.starts_with("--") {
-                        println!(
+                        warn!(
                             "{argument_name}'s value started with \"--\", so we are treating it as a boolean flag"
                         );
                         i += 1;
-                        println!("Stripping prefix");
-                        println!("{}", argument_name);
+                        info!("Stripping prefix");
+                        info!("{}", argument_name);
                         if !argument_name.starts_with("--") {
-                            println!("New arg is \"{}\"", argument_name);
+                            info!("New arg is \"{}\"", argument_name);
                             arg_map
                                 .insert(argument_name.to_string(), vec![ArgumentFlag::BooleanTrue]);
                             continue;
                         } else {
                             match argument_name.strip_prefix("--") {
                                 Some(found) => {
-                                    println!("New arg is \"{}\"", found);
+                                    info!("New arg is \"{}\"", found);
                                     arg_map
                                         .insert(found.to_string(), vec![ArgumentFlag::BooleanTrue]);
                                     continue;
                                 }
                                 None => {
-                                    println!(
+                                    warn!(
                                         "Did not add argument bcuz it was None when prefix was stripped"
                                     );
                                     continue;
@@ -125,17 +124,17 @@ pub(crate) fn parse_multiparam(args: &[&str]) -> HashMap<String, Vec<ArgumentFla
                             }
                         }
                     }
-                    println!("The argument name contained \"--\"");
-                    println!("Adding {arg_value} to {argument_name}");
+                    info!("The argument name contained \"--\"");
+                    info!("Adding {arg_value} to {argument_name}");
                     match arg_map.get_mut(argument_name) {
                         Some(mutt) => {
-                            println!(
+                            info!(
                                 "The arg map contained the argument name so we add the new value to the end"
                             );
                             mutt.push(ArgumentFlag::Value(arg_value.to_string()));
                         }
                         None => {
-                            println!("Arg map does not contain {argument_name}");
+                            info!("Arg map does not contain {argument_name}");
                             arg_map.insert(
                                 argument_name.to_string(),
                                 vec![ArgumentFlag::Value(arg_value.to_string())],
@@ -144,16 +143,16 @@ pub(crate) fn parse_multiparam(args: &[&str]) -> HashMap<String, Vec<ArgumentFla
                     }
                 }
                 None => {
-                    println!("The argument name did not contain \"--\"");
+                    warn!("The argument name did not contain \"--\"");
                 }
             }
             i += 2;
         } else {
             // otherwise we call invalid argument and skip it
-            println!("Invalid Argument");
+            warn!("Invalid Argument");
             i += 1;
         }
     }
-    println!("Finished parsing");
+    info!("Finished parsing");
     arg_map
 }
