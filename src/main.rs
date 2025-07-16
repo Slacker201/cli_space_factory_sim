@@ -18,7 +18,7 @@ mod entities;
 mod item_utils;
 mod logging;
 pub fn main() {
-    logger::set_params(vec![Info(true), Warn(true)]);
+    logger::set_params(vec![Info(true), Warn(true), Error(true)]);
     info!("Testing");
     warn!("HELP ME");
     error!("Program died");
