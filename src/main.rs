@@ -57,6 +57,14 @@ fn compiler_tickles() {
     let i_b4 = ItemBuilder::new().set_count(1).set_id(1);
     let i_b5 = ItemBuilder::new().set_count(1).set_id(1);
     let assembler = fac.get_assembler_mut();
+    inv.max_capacity();
+    inv.items();
+    inv.remove(&i_b.clone().build());
+    inv.capacity();
+    inv.set_max_capacity(20);
+    inv.get_all();
+    inv.get_all_mut();
+    inv.is_empty();
     i_b5.build().name();
     t_order.saturate_inv();
     t_order.set_saturate_inv(true);
