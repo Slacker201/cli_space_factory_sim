@@ -91,7 +91,7 @@ fn get_item_args(argument_name: &str, cmd: &Command) -> Option<Vec<Item>> {
         Some(argument_list) => {
             for arg in argument_list {
                 match arg {
-                    crate::command_line_interface::argument_flag::ArgumentFlag::BooleanTrue=> {
+                    crate::command_line_interface::argument_flag::ArgumentFlag::BooleanTrue => {
                         warn!(
                             "The argument value given is not an item. The correct format is id:count"
                         );
@@ -105,27 +105,21 @@ fn get_item_args(argument_name: &str, cmd: &Command) -> Option<Vec<Item>> {
                             continue;
                         }
                         let id = match arg_parts[0].parse::<u64>() {
-                            Ok(parsed_id) => {
-                                parsed_id
-                            }
+                            Ok(parsed_id) => parsed_id,
                             Err(e) => {
                                 warn!(
                                     "Error parsing the count of {}. Error is {}",
-                                    id_count_amalgamation,
-                                    e
+                                    id_count_amalgamation, e
                                 );
                                 continue;
                             }
                         };
                         let count = match arg_parts[1].parse::<u128>() {
-                            Ok(parsed_count) => {
-                                parsed_count
-                            }
+                            Ok(parsed_count) => parsed_count,
                             Err(e) => {
                                 warn!(
                                     "Error parsing the count of {}. Error is {}",
-                                    id_count_amalgamation,
-                                    e
+                                    id_count_amalgamation, e
                                 );
                                 continue;
                             }
