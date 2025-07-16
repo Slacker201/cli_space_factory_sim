@@ -1,5 +1,6 @@
 use crate::item_utils::item::item::Item;
 
+#[derive(Clone)]
 /// Item builder, it builds items.
 pub struct ItemBuilder {
     item: Item,
