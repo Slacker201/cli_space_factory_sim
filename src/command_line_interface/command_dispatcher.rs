@@ -1,12 +1,13 @@
-use core::fmt;
 use std::collections::HashMap;
 
 use crate::{
     command_line_interface::{
-        argument_flag::ArgumentFlag, command_struct::Command, commands::{
+        argument_flag::ArgumentFlag,
+        command_struct::Command,
+        commands::{
             add_recipe::add_recipe_cmd, load_recipes_from_file::load_recipes_cmd,
             save_recipes_to_file::save_recipes_cmd, view_recipe::view_recipes_cmd,
-        }
+        },
     },
     item_utils::recipe::recipe::Recipe,
 };
@@ -15,10 +16,7 @@ use crate::{
 pub fn parse_and_dispatch_command(comd: &str, recipes: &mut Vec<Recipe>) {
     let mut command = Command::new();
     let cmd = comd.to_lowercase();
-    if cmd.contains("\x01true") {
-        println!("Invalid Characters");
-        return;
-    }
+
     let parts: Vec<&str> = cmd.split_whitespace().collect();
 
     match parts.first() {
@@ -60,7 +58,7 @@ fn dispatch_command(cmd: Command, recipes: &mut Vec<Recipe>) {
     }
 }
 /// This takes a &str array and returns a hashmap of (argument names, argument flag vectors)
-fn parse_multiparam(args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>> {
+pub fn parse_multiparam(args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>> {
     println!("printing");
     println!("{args:?}");
     let mut arg_map: HashMap<String, Vec<ArgumentFlag>> = HashMap::new();
@@ -77,9 +75,17 @@ fn parse_multiparam(args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>> {
                     args[i]
                 );
                 i += 1;
-                arg_map.insert(current_arg.to_string(), vec![ArgumentFlag::BooleanTrue]);
-
-                continue;
+                match current_arg.strip_prefix("--") {
+                    Some(found) => {
+                        println!("New arg is \"{}\"", found);
+                        arg_map.insert(found.to_string(), vec![ArgumentFlag::BooleanTrue]);
+                        continue;
+                    }
+                    None => {
+                        println!("Did not add argument bcuz it was None when prefix was stripped");
+                        continue;
+                    }
+                }
             }
             // There is room for the argument
             let arg_value = args[i + 1];
@@ -95,8 +101,29 @@ fn parse_multiparam(args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>> {
                             "{argument_name}'s value started with \"--\", so we are treating it as a boolean flag"
                         );
                         i += 1;
-                        arg_map.insert(argument_name.to_string(), vec![ArgumentFlag::BooleanTrue]);
-                        continue;
+                        println!("Stripping prefix");
+                        println!("{}", argument_name);
+                        if !argument_name.starts_with("--") {
+                            println!("New arg is \"{}\"", argument_name);
+                            arg_map
+                                .insert(argument_name.to_string(), vec![ArgumentFlag::BooleanTrue]);
+                            continue;
+                        } else {
+                            match argument_name.strip_prefix("--") {
+                                Some(found) => {
+                                    println!("New arg is \"{}\"", found);
+                                    arg_map
+                                        .insert(found.to_string(), vec![ArgumentFlag::BooleanTrue]);
+                                    continue;
+                                }
+                                None => {
+                                    println!(
+                                        "Did not add argument bcuz it was None when prefix was stripped"
+                                    );
+                                    continue;
+                                }
+                            }
+                        }
                     }
                     println!("The argument name contained \"--\"");
                     println!("Adding {arg_value} to {argument_name}");
@@ -130,5 +157,3 @@ fn parse_multiparam(args: &[&str]) -> HashMap<String, Vec<ArgumentFlag>> {
     println!("Finished parsing");
     arg_map
 }
-
-
