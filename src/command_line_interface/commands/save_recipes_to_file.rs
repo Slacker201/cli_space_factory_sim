@@ -10,18 +10,13 @@ pub fn save_recipes_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
     match cmd.args().get("location") {
         Some(loc) => {
             let location = match loc.first() {
-                Some(location) =>
-                    match location {
-                        crate::command_line_interface::argument_flag::ArgumentFlag::BooleanTrue => {
-                            println!("Value was a boolean flag");
-                            return;
-                        }
-                        crate::command_line_interface::argument_flag::ArgumentFlag::Value(
-                            var,
-                        ) => {
-                            var
-                        }
+                Some(location) => match location {
+                    crate::command_line_interface::argument_flag::ArgumentFlag::BooleanTrue => {
+                        println!("Value was a boolean flag");
+                        return;
                     }
+                    crate::command_line_interface::argument_flag::ArgumentFlag::Value(var) => var,
+                },
                 None => {
                     println!("Location has no value");
                     return;
