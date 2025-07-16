@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod recipe_tests {
     use crate::{
-        entities::entity_components::inventory::inventory::Inventory,
+        entities::entity_components::inventory::Inventory,
         item_utils::{item::item_builder::ItemBuilder, recipe::recipe::Recipe},
     };
 

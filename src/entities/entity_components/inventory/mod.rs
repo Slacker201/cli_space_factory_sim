@@ -1,4 +1,3 @@
-pub mod inventory;
 pub mod tests;
 
 use std::collections::HashMap;

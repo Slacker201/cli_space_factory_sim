@@ -3,7 +3,7 @@ mod tests {
     use std::collections::HashMap;
 
     use crate::{
-        entities::entity_components::inventory::inventory::Inventory,
+        entities::entity_components::inventory::Inventory,
         item_utils::item::{item::Item, item_builder::ItemBuilder},
     };
 

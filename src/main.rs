@@ -2,7 +2,7 @@ use std::io;
 
 use crate::{
     entities::{
-        entity_components::inventory::inventory::Inventory,
+        entity_components::inventory::Inventory,
         factories::{entity_base::entity_base::EntityBase, factory::factory::Factory},
     },
     item_utils::{
@@ -45,6 +45,7 @@ pub fn main() {
 }
 
 fn compiler_tickles() {
+
     let mut fac = Factory::new();
     let mut inv = Inventory::new();
     let mut t_order = TransportOrder::new();

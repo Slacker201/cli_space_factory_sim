@@ -1,6 +1,6 @@
 use crate::{
     entities::{
-        entity_components::{assembler::assembler::Assembler, inventory::inventory::Inventory},
+        entity_components::{assembler::assembler::Assembler, inventory::Inventory},
         factories::entity_base::entity_base::EntityBase,
     },
     item_utils::transport_order::transport_order::TransportOrder,

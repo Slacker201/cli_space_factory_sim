@@ -3,7 +3,7 @@ mod tests {
     use crate::{
         entities::entity_components::{
             assembler::{assembler::Assembler, processing_state::ProcessingState},
-            inventory::inventory::Inventory,
+            inventory::Inventory,
         },
         item_utils::{item::item_builder::ItemBuilder, recipe::recipe::Recipe},
     };

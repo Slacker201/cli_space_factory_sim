@@ -1,6 +1,6 @@
 use crate::{
     entities::entity_components::{
-        assembler::processing_state::ProcessingState, inventory::inventory::Inventory,
+        assembler::processing_state::ProcessingState, inventory::Inventory,
     },
     item_utils::recipe::recipe::Recipe,
 };

@@ -1,7 +1,7 @@
 use bincode::{Decode, Encode};
 
 use crate::{
-    entities::entity_components::inventory::inventory::Inventory,
+    entities::entity_components::inventory::Inventory,
     item_utils::{item::item::Item, transport_order::transport_order::TransportOrder},
 };
 
