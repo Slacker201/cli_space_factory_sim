@@ -45,7 +45,7 @@ pub fn main() {
 }
 
 fn compiler_tickles() {
-
+    let world = World::new();
     let mut fac = Factory::new();
     let mut inv = Inventory::new();
     let mut t_order = TransportOrder::new();
@@ -59,6 +59,7 @@ fn compiler_tickles() {
     let i_b4 = ItemBuilder::new().set_count(1).set_id(1);
     let i_b5 = ItemBuilder::new().set_count(1).set_id(1);
     let assembler = fac.get_assembler_mut();
+    world.node();
     node.factories();
     node.factories_mut();
     node.clear_factories();
