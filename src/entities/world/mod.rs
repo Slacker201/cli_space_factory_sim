@@ -21,4 +21,10 @@ impl World {
     pub fn all_recipes_mut(&mut self) -> &mut HashMap<String, Recipe> {
         &mut self.all_recipes
     }
+    pub fn node(&self) -> &Node {
+        &self.node
+    }
+    pub fn node_mut(&mut self) -> &mut Node {
+        &mut self.node
+    }
 }
