@@ -13,7 +13,7 @@ pub struct Node {
 
 impl Node {
     pub fn new() -> Node {
-        Node { factories: HashMap::new(), factory_limit: 50 }
+        Node { factories: HashMap::new(), factory_limit: 5 }
     }
     pub fn add_factory(&mut self, fac: Factory) -> Option<Factory> {
         if self.factories.len() >= self.factory_limit {
