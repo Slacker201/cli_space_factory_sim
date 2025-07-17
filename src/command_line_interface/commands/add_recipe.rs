@@ -26,7 +26,7 @@ pub fn add_recipe_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
         }
     };
 
-    let a = match get_single_arg("processing_time", &cmd) {
+    let processing_time = match get_single_arg("processing_time", &cmd) {
         Some(str) => match str.parse::<u32>() {
             Ok(val) => val,
             Err(e) => {
@@ -76,7 +76,7 @@ pub fn add_recipe_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
     let mut recipe = Recipe::new();
     recipe.set_input_items(input_items);
     recipe.set_output_items(output_items);
-    recipe.set_processing_time(a);
+    recipe.set_processing_time(processing_time);
     recipe.set_heat_produced(heat_produced_per_tick);
     recipe.set_name(name);
     recipe.set_power_draw(power_draw);
