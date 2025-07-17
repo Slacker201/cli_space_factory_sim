@@ -1,3 +1,5 @@
+use rand::random;
+
 use crate::{command_line_interface::command_struct::Command, entities::{factories::factory::Factory, world::World}, error, info};
 
 
@@ -14,6 +16,8 @@ pub fn add_factory_cmd(cmd: Command, world: &mut World) {
     };
     let mut factory = Factory::new();
     factory.set_name(name);
+    let rand_num: u64 = random();
+    factory.set_id(rand_num);
     let failed_factory_add_factory = world.node_mut().add_factory(factory);
     match failed_factory_add_factory {
         Some(_fac) => {
