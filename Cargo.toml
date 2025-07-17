@@ -12,4 +12,5 @@ strip = "symbols"
 
 [dependencies]
 bincode = "2.0.1"
+rand = "0.9.1"
 
