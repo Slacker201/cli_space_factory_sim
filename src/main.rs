@@ -3,7 +3,7 @@ use std::io;
 use crate::{
     entities::{
         entity_components::inventory::Inventory,
-        factories::{entity_base::entity_base::EntityBase, factory::Factory}, node::Node,
+        factories::{entity_base::entity_base::EntityBase, factory::Factory}, node::Node, world::World,
     },
     item_utils::{
         item::item_builder::ItemBuilder, recipe::recipe::Recipe,
@@ -23,7 +23,7 @@ pub fn main() {
     warn!("HELP ME");
     error!("Program died");
     println!("Enter your command. Type exit to exit program");
-    let mut recipes = Vec::<Recipe>::new();
+    let mut world = World::new();
     loop {
         let mut input = String::new();
 
@@ -36,7 +36,7 @@ pub fn main() {
         } else {
             command_line_interface::command_dispatcher::parse_and_dispatch_command(
                 &input,
-                &mut recipes,
+                &mut world,
             );
         }
     }

@@ -1,4 +1,4 @@
-use std::{fs::File, io::Write};
+use std::{collections::HashMap, fs::File, io::Write};
 
 use bincode::config;
 
@@ -6,7 +6,7 @@ use crate::{command_line_interface::command_struct::Command, error, info, item_u
 
 static CFG: config::Configuration = bincode::config::standard();
 /// This saves the recipes vector to the given file, or "assets/recipe.sgs" if it is not given
-pub fn save_recipes_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
+pub fn save_recipes_cmd(cmd: Command, recipes: &mut HashMap<String, Recipe>) {
     match cmd.args().get("location") {
         Some(loc) => {
             let location = match loc.first() {
@@ -31,7 +31,7 @@ pub fn save_recipes_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
 }
 
 /// This encodes the recipe vector and saves it to a file, printing an error and returning if it fails
-fn write_to_location(loc: &str, recipes: &Vec<Recipe>) {
+fn write_to_location(loc: &str, recipes: &HashMap<String, Recipe>) {
     let mut target_file = match File::create(loc) {
         Ok(file) => {
             info!("Successfully created file");

@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{
     command_line_interface::command_struct::Command,
     error, info,
@@ -9,7 +11,7 @@ use crate::{
 };
 
 /// This adds a recipe to the recipe vector if it has the correct arguments. Otherwise it fails
-pub fn add_recipe_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
+pub fn add_recipe_cmd(cmd: Command, recipes: &mut HashMap<String, Recipe>) {
     info!(": [add_recipe] Adding recipe");
     let input_items = match get_item_args("input_item", &cmd) {
         Some(items) => items,
@@ -78,10 +80,10 @@ pub fn add_recipe_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
     recipe.set_output_items(output_items);
     recipe.set_processing_time(processing_time);
     recipe.set_heat_produced(heat_produced_per_tick);
-    recipe.set_name(name);
+    recipe.set_name(name.clone());
     recipe.set_power_draw(power_draw);
     info!("{:?}", recipe);
-    recipes.push(recipe);
+    recipes.insert(name, recipe);
 }
 
 /// This returns an option for vector holding items. The items are found by parsing a given argument

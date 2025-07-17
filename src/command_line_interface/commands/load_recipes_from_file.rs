@@ -1,4 +1,4 @@
-use std::{fs::File, io::Read};
+use std::{collections::HashMap, fs::File, io::Read};
 
 use bincode::config::{self};
 
@@ -10,7 +10,7 @@ use crate::{
 
 static CFG: config::Configuration = bincode::config::standard();
 /// This loads the recipe vector from the given location, if the location is not given it uses "assets/recipe.sgs"
-pub fn load_recipes_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
+pub fn load_recipes_cmd(cmd: Command, recipes: &mut HashMap<String, Recipe>) {
     match cmd.args().get("location") {
         Some(loc) => {
             let location = match loc.first() {
@@ -35,7 +35,7 @@ pub fn load_recipes_cmd(cmd: Command, recipes: &mut Vec<Recipe>) {
 }
 
 /// This loads a file from the given location and decodes the recipes and sets the recipes variable to the decoded recipes, printing and error and returning if it fails
-fn load_from_location(loc: &str, recipes: &mut Vec<Recipe>) {
+fn load_from_location(loc: &str, recipes: &mut HashMap<String, Recipe>) {
     let mut a = match File::open(loc) {
         Ok(file1) => file1,
         Err(e) => {
@@ -45,7 +45,7 @@ fn load_from_location(loc: &str, recipes: &mut Vec<Recipe>) {
     };
     let mut buffer: Vec<u8> = Vec::new();
     let _ = a.read_to_end(&mut buffer);
-    let decoded_data: Result<(Vec<Recipe>, usize), bincode::error::DecodeError> =
+    let decoded_data: Result<(HashMap<String, Recipe>, usize), bincode::error::DecodeError> =
         bincode::decode_from_slice(&buffer, CFG);
     match decoded_data {
         Ok(decoded) => {

@@ -8,11 +8,11 @@ use crate::{
             add_recipe::add_recipe_cmd, load_recipes_from_file::load_recipes_cmd,
             save_recipes_to_file::save_recipes_cmd, view_recipe::view_recipes_cmd,
         },
-    }, error, info, item_utils::recipe::recipe::Recipe, warn
+    }, entities::world::World, error, info, warn
 };
 
 /// This splits the command into tokens and runs them through a parser before dispatching the command
-pub fn parse_and_dispatch_command(comd: &str, recipes: &mut Vec<Recipe>) {
+pub fn parse_and_dispatch_command(comd: &str, world: &mut World) {
     let mut command = Command::new();
     let cmd = comd.to_lowercase();
 
@@ -27,7 +27,7 @@ pub fn parse_and_dispatch_command(comd: &str, recipes: &mut Vec<Recipe>) {
             let arg_map = parse_multiparam(args);
             info!("{arg_map:?}");
             command.set_args(arg_map);
-            dispatch_command(command, recipes);
+            dispatch_command(command, world);
         }
         None => {
             error!("Command was empty");
@@ -36,20 +36,20 @@ pub fn parse_and_dispatch_command(comd: &str, recipes: &mut Vec<Recipe>) {
 }
 
 /// This uses a switch statement on the command name to run a command
-fn dispatch_command(cmd: Command, recipes: &mut Vec<Recipe>) {
+fn dispatch_command(cmd: Command, world: &mut World) {
     info!("Dispatching command");
     match cmd.name().to_lowercase().as_str() {
         "add_recipe" => {
-            add_recipe_cmd(cmd, recipes);
+            add_recipe_cmd(cmd, world.all_recipes_mut());
         }
         "view_recipes" => {
-            view_recipes_cmd(cmd, recipes);
+            view_recipes_cmd(cmd, world.all_recipes_mut());
         }
         "load_recipes" => {
-            load_recipes_cmd(cmd, recipes);
+            load_recipes_cmd(cmd, world.all_recipes_mut());
         }
         "save_recipes" => {
-            save_recipes_cmd(cmd, recipes);
+            save_recipes_cmd(cmd, world.all_recipes_mut());
         }
         _ => {
             error!("Unknown Command on command dispatch")
