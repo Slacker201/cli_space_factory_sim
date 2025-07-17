@@ -59,7 +59,9 @@ fn compiler_tickles() {
     let i_b4 = ItemBuilder::new().set_count(1).set_id(1);
     let i_b5 = ItemBuilder::new().set_count(1).set_id(1);
     let assembler = fac.get_assembler_mut();
-    
+    node.factories();
+    node.factories_mut();
+    node.clear_factories();
     inv.max_capacity();
     inv.items();
     inv.remove(&i_b.clone().build());
