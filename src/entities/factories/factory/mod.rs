@@ -10,14 +10,16 @@ use crate::{
 #[derive(Clone)]
 pub struct Factory {
     assembler: Assembler,
-    id: u64
+    id: u64,
+    name: String
 }
 
 impl Factory {
     pub fn new() -> Factory {
         Factory {
             assembler: Assembler::new(),
-            id: 0
+            id: 0,
+            name: "default".to_string()
         }
     }
     pub fn move_items_from_output_to(&mut self, tar_inv: &mut Inventory, t_order: TransportOrder) {
@@ -38,6 +40,9 @@ impl Factory {
     }
     pub fn id(&self) -> u64 {
         self.id
+    }
+    pub fn set_name(&mut self, new_name: String) {
+        self.name = new_name;
     }
 }
 
