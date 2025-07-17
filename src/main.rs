@@ -3,7 +3,7 @@ use std::io;
 use crate::{
     entities::{
         entity_components::inventory::Inventory,
-        factories::{entity_base::entity_base::EntityBase, factory::factory::Factory},
+        factories::{entity_base::entity_base::EntityBase, factory::Factory}, node::Node,
     },
     item_utils::{
         item::item_builder::ItemBuilder, recipe::recipe::Recipe,
@@ -50,13 +50,16 @@ fn compiler_tickles() {
     let mut inv = Inventory::new();
     let mut t_order = TransportOrder::new();
     let mut rec = Recipe::new();
+    let mut node = Node::new();
     let t_order2 = TransportOrder::new();
+    node.add_factory(fac.clone());
     let i_b = ItemBuilder::new().set_count(1).set_id(1);
     let i_b2 = ItemBuilder::new().set_count(1).set_id(1);
     let i_b3 = ItemBuilder::new().set_count(1).set_id(1);
     let i_b4 = ItemBuilder::new().set_count(1).set_id(1);
     let i_b5 = ItemBuilder::new().set_count(1).set_id(1);
     let assembler = fac.get_assembler_mut();
+    
     inv.max_capacity();
     inv.items();
     inv.remove(&i_b.clone().build());
