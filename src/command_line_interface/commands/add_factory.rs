@@ -1,6 +1,6 @@
 use rand::random;
 
-use crate::{command_line_interface::command_struct::Command, entities::{factories::factory::Factory, world::World}, error, info};
+use crate::{command_line_interface::command_struct::Command, entities::{factories::factory::Factory, world::World}, error, info, warn};
 
 
 
@@ -8,12 +8,18 @@ use crate::{command_line_interface::command_struct::Command, entities::{factorie
 pub fn add_factory_cmd(cmd: Command, world: &mut World) {
     // Get name argument value. Make new factory with random id
     let name = match get_single_arg("name", &cmd) {
-        Some(name) => name,
+        Some(name) => name.trim().to_lowercase().to_string(),
         None => {
             error!("Name not provided. Using random id");
             "default".to_string()
         },
     };
+    for fac in world.node().factories().values() {
+        if fac.name() == &name {
+            warn!("Name already used");
+            return;
+        }
+    }
     let mut factory = Factory::new();
     factory.set_name(name);
     let rand_num: u64 = random();
