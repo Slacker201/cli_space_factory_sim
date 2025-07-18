@@ -63,6 +63,7 @@ fn compiler_tickles() {
     node.factories();
     node.factories_mut();
     node.clear_factories();
+    node.contains_factory(1);
     inv.max_capacity();
     inv.items();
     inv.remove(&i_b.clone().build());
