@@ -2,7 +2,12 @@ use crate::{command_line_interface::{command_struct::Command, commands::command_
 
 
 
-
+/// Removes a factory from the world
+/// 
+/// # Arguments
+/// * cmd - The command object constructed by the parser
+/// * world - A reference to the global world object
+/// 
 pub fn remove_factory_cmd(cmd: Command, world: &mut World) {
     let id;
     match get_single_arg("name", &cmd) {
