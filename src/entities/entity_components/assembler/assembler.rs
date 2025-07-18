@@ -4,7 +4,7 @@ use crate::{
     },
     item_utils::recipe::recipe::Recipe,
 };
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 /// The assembler module for a factory. This module converts items to other items
 pub struct Assembler {
     /// The inventory that input items are placed in
