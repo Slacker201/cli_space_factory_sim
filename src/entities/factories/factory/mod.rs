@@ -47,6 +47,9 @@ impl Factory {
     pub fn set_id(&mut self, new_id: u64) {
         self.id = new_id;
     }
+    pub fn name(&self) -> &String {
+        &self.name
+    }
 }
 
 impl EntityBase for Factory {
