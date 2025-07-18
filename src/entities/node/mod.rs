@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::{entities::factories::factory::Factory, info, warn};
 
-
+pub mod tests;
 
 
 /// Represents a node with a factory hashmap, a name to id map, and a factory limit
