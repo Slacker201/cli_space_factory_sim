@@ -4,7 +4,12 @@ use crate::{command_line_interface::{command_struct::Command, commands::command_
 
 
 
-
+/// Adds a new factory to the node
+/// 
+/// # Arguments
+/// * cmd - The command object constructed by the parser
+/// * world - A reference to the global world object
+/// 
 pub fn add_factory_cmd(cmd: Command, world: &mut World) {
     // Get name argument value. Make new factory with random id
     let name = match get_single_arg("name", &cmd) {
