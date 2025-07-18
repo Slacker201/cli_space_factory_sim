@@ -36,4 +36,12 @@ impl Node {
     pub fn clear_factories(&mut self) {
         self.factories.clear();
     }
+    pub fn contains_factory_with_name(&self, name: &String) -> bool {
+        for fac in self.factories.values() {
+            if fac.name() == name {
+                return true
+            }
+        }
+        false
+    }
 }
