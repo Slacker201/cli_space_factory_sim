@@ -88,6 +88,18 @@ impl Node {
     pub fn contains_factory_with_name(&self, name: &String) -> bool {
         self.name_to_id_map.contains_key(&normalize_name_str(name))
     }
+    /// Returns if there is a factory with the given id
+    /// # Arguments
+    /// 
+    ///  * id - The id of the factory you are trying to find
+    /// 
+    /// # Returns
+    /// 
+    /// True or false, depending if the factory exists
+    /// 
+    pub fn contains_factory(&self, id: u64) -> bool {
+        self.factories.contains_key(&id)
+    }
     /// Converts a name to an option for a factory id
     /// 
     /// # Arguments
