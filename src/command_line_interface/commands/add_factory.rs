@@ -1,6 +1,6 @@
 use rand::random;
 
-use crate::{command_line_interface::command_struct::Command, entities::{factories::factory::Factory, world::World}, error, info, warn};
+use crate::{command_line_interface::{command_struct::Command, commands::command_utils::get_single_arg}, entities::{factories::factory::Factory, world::World}, error, info, warn};
 
 
 
@@ -29,18 +29,6 @@ pub fn add_factory_cmd(cmd: Command, world: &mut World) {
         }
         None => {
             info!("Successfully added factory")
-        }
-    }
-}
-
-
-/// This returns the last argument for a given argument name, or nothing if its not found
-fn get_single_arg(argument_name: &str, cmd: &Command) -> Option<String> {
-    match cmd.args().get(argument_name) {
-        Some(names) => Some(names.last()?.to_string()),
-        None => {
-            error!("Argument {} not found", argument_name);
-            None
         }
     }
 }
