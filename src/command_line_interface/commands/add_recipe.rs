@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
-    command_line_interface::command_struct::Command,
+    command_line_interface::{command_struct::Command, commands::command_utils::get_single_arg},
     error, info,
     item_utils::{
         item::{item::Item, item_builder::ItemBuilder},
@@ -138,14 +138,4 @@ fn get_item_args(argument_name: &str, cmd: &Command) -> Option<Vec<Item>> {
         }
     }
     Some(input_items)
-}
-/// This returns the last argument for a given argument name, or nothing if its not found
-fn get_single_arg(argument_name: &str, cmd: &Command) -> Option<String> {
-    match cmd.args().get(argument_name) {
-        Some(names) => Some(names.last()?.to_string()),
-        None => {
-            error!("Argument {} not found", argument_name);
-            None
-        }
-    }
 }
