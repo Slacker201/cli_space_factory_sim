@@ -130,9 +130,6 @@ impl Node {
     }
 }
 
-fn normalize_name(name: String) -> String {
-    name.to_lowercase().trim().to_string()
-}
 fn normalize_name_str(name: &str) -> String {
     name.to_lowercase().trim().to_string()
 }
