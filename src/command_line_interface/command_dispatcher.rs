@@ -60,6 +60,7 @@ fn dispatch_command(cmd: Command, world: &mut World) {
         }
         "view_factories" => {
             view_factories_cmd(cmd, world);
+        }
         "remove_factory" => {
             remove_factory_cmd(cmd, world);
         }
