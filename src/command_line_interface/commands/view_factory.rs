@@ -4,7 +4,12 @@ use crate::{command_line_interface::{command_struct::Command, commands::command_
 
 
 
-
+/// Prints a specified factory or nothing if the factory doesn't exist.
+/// 
+/// # Arguments
+/// * cmd - The command object constructed by the parser
+/// * world - A reference to the global world object
+/// 
 pub fn view_factory_cmd (cmd: Command, world: &World) {
     let id: u64 = match get_single_arg("name", &cmd) {
         Some(name) => {
@@ -38,7 +43,7 @@ pub fn view_factory_cmd (cmd: Command, world: &World) {
     }
 }
 
-
+/// Tries to the the id field. A simple helper function to reduce bloat
 fn try_get_id(cmd: &Command) -> Option<u64> {
     match get_single_arg("id", &cmd) {
         Some(val) => {
