@@ -54,4 +54,7 @@ impl Node {
             },
         }
     }
+    pub fn get_factory(&self, id: u64) -> Option<&Factory> {
+        self.factories.get(&id)
+    }
 }
