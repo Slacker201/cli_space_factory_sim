@@ -14,11 +14,9 @@ pub fn add_factory_cmd(cmd: Command, world: &mut World) {
             "default".to_string()
         },
     };
-    for fac in world.node().factories().values() {
-        if fac.name() == &name {
-            warn!("Name already used");
-            return;
-        }
+    if world.node().contains_factory_with_name(&name) {
+        warn!("Name already used");
+        return;
     }
     let mut factory = Factory::new();
     factory.set_name(name);
