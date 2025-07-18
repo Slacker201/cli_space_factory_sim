@@ -6,3 +6,4 @@ pub mod add_factory;
 pub mod view_factories;
 pub mod remove_factory;
 pub mod command_utils;
+pub mod view_factory;
