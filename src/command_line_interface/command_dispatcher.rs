@@ -4,8 +4,13 @@ use crate::{
     command_line_interface::{
         argument_flag::ArgumentFlag,
         command_struct::Command,
-        commands::{
-            add_factory::add_factory_cmd, add_recipe::add_recipe_cmd, load_recipes_from_file::load_recipes_cmd, remove_factory::remove_factory_cmd, save_recipes_to_file::save_recipes_cmd, view_recipe::view_recipes_cmd
+        commands::{add_factory::add_factory_cmd,
+add_recipe::add_recipe_cmd,
+load_recipes_from_file::load_recipes_cmd,
+remove_factory::remove_factory_cmd,
+save_recipes_to_file::save_recipes_cmd,
+view_factories::view_factories_cmd,
+view_recipe::view_recipes_cmd
         },
     }, entities::world::World, error, info, warn
 };
@@ -53,6 +58,8 @@ fn dispatch_command(cmd: Command, world: &mut World) {
         "add_factory" => {
             add_factory_cmd(cmd, world);
         }
+        "view_factories" => {
+            view_factories_cmd(cmd, world);
         "remove_factory" => {
             remove_factory_cmd(cmd, world);
         }

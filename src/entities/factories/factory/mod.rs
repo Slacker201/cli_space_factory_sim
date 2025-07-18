@@ -7,7 +7,7 @@ use crate::{
     },
     item_utils::transport_order::transport_order::TransportOrder,
 };
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Factory {
     assembler: Assembler,
     id: u64,
