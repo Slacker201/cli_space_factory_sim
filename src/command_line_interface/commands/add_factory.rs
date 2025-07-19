@@ -29,11 +29,21 @@ pub fn add_factory_cmd(cmd: Command, world: &mut World) {
     factory.set_id(rand_num);
     let failed_factory_add_factory = world.node_mut().add_factory(factory);
     match failed_factory_add_factory {
-        Some(_fac) => {
-            info!("Node was too full");
-        }
-        None => {
-            info!("Successfully added factory")
-        }
+        Ok(_) => {
+            info!("Successfully added the factory")
+        },
+        Err(err) => {
+            match err {
+                crate::entities::node::NodeFactoryAddError::FactoryAddDuplicateId(_) => {
+                    error!("The factory's id was taken")
+                },
+                crate::entities::node::NodeFactoryAddError::FactoryAddDuplicateName(_) => {
+                    error!("The factory's name was taken")
+                },
+                crate::entities::node::NodeFactoryAddError::LimitReached(_) => {
+                    error!("The node contained too many factories")
+                },
+            }
+        },
     }
 }

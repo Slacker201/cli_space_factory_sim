@@ -1,7 +1,7 @@
-use std::collections::HashMap;
+use std::{collections::{btree_map::Values, HashMap}, fmt::{self, Display, Formatter}};
 
 use crate::{entities::factories::factory::Factory, info, warn};
-
+use thiserror::Error;
 pub mod tests;
 
 
@@ -34,22 +34,22 @@ impl Node {
     /// 
     /// None if the factory is added, and the factory if it is not added because the id already exists, the name already exists, or the node contains too many factories
     /// 
-    pub fn add_factory(&mut self, fac: Factory) -> Option<Factory> {
+    pub fn add_factory(&mut self, fac: Factory) -> Result<(), NodeFactoryAddError> {
         info!("Factory current len and limit: {} {}", self.factories.len(), self.factory_limit);
         if self.factories.len() >= self.factory_limit {
-            return Some(fac)
+            return Err(NodeFactoryAddError::LimitReached(fac))
         }
         if self.factories.contains_key(&fac.id()) {
             warn!("Duplicate Ids: {}", fac.id());
-            return Some(fac)
+            return Err(NodeFactoryAddError::FactoryAddDuplicateId((fac.id(), fac)))
         }
         if self.name_to_id_map.contains_key(fac.name()) {
             warn!("Duplicate Names: {}", fac.name());
-            return Some(fac)
+            return Err(NodeFactoryAddError::FactoryAddDuplicateName((fac.name().to_string(), fac)))
         }
         self.name_to_id_map.insert(normalize_name_str(&fac.name()), fac.id());
         self.factories.insert(fac.id(), fac);
-        None
+        Ok(())
     }
     /// Immutable getter for factories
     /// 
@@ -117,13 +117,14 @@ impl Node {
     /// 
     /// # Arguments
     /// * id - The id of the factory you want to remove
-    pub fn remove_factory(&mut self, id: u64) {
+    pub fn remove_factory(&mut self, id: u64) -> Result<(), NodeError>{
         match self.factories.remove(&id) {
             Some(fac) => {
                 self.name_to_id_map.remove(fac.name());
+                Ok(())
             },
             None => {
-                info!("Factory not removed due to it not being present")
+                Err(NodeError::FactoryDoesNotExist(id))
             },
         }
     }
@@ -144,4 +145,52 @@ impl Node {
 
 fn normalize_name_str(name: &str) -> String {
     name.to_lowercase().trim().to_string()
+}
+
+#[derive(Debug, Error)]
+pub enum NodeError {
+    FactoryAddDuplicateId((u64, Factory)),
+    FactoryAddDuplicateName((String, Factory)),
+    FactoryDoesNotExist(u64)
+}
+
+impl Display for NodeError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                NodeError::FactoryAddDuplicateId(val)=>{format!("FactoryAddDuplicateId: {}",val)}
+                NodeError::FactoryAddDuplicateName(val)=>{format!("FactoryAddDuplicateName: {}",val)}
+                NodeError::FactoryDoesNotExist(val) => {format!("FactoryDoesNotExist: {}", val)},
+            }
+        )
+    }
+}
+
+#[derive(Debug, Error)]
+pub enum NodeFactoryAddError {
+    FactoryAddDuplicateId((u64, Factory)),
+    FactoryAddDuplicateName((String, Factory)),
+    LimitReached(Factory)
+}
+
+impl Display for NodeFactoryAddError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                NodeFactoryAddError::FactoryAddDuplicateId(fac) => {
+                    format!("DuplicateFactoryId: Id is {}", fac.0)
+                },
+                NodeFactoryAddError::FactoryAddDuplicateName(fac) => {
+                    format!("DuplicateFactoryName: Id is {}", fac.0)
+                },
+                NodeFactoryAddError::LimitReached(_fac) => {
+                    format!("Node contains too many items")
+                },
+            }
+        )
+    }
 }
