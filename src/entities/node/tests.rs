@@ -1,7 +1,3 @@
-
-
-
-
 #[cfg(test)]
 mod test {
     use crate::entities::{factories::factory::Factory, node::Node};
@@ -12,7 +8,7 @@ mod test {
         let mut fac = Factory::new();
         fac.set_id(5);
         fac.set_name("foo".to_string());
-        node.add_factory(fac);
+        assert_eq!(Ok(()), node.add_factory(fac));
 
         assert!(node.contains_factory_with_name(&"foo".to_string()));
         assert!(node.contains_factory(5))
@@ -28,9 +24,9 @@ mod test {
 
         fac2.set_id(4);
         fac2.set_name("bar".to_string());
-        
-        node.add_factory(fac);
-        node.add_factory(fac2);
+
+        assert_eq!(Ok(()), node.add_factory(fac));
+        assert_eq!(Ok(()), node.add_factory(fac2));
 
         assert!(node.contains_factory_with_name(&"foo".to_string()));
         assert!(node.contains_factory_with_name(&"bar".to_string()));
@@ -44,15 +40,15 @@ mod test {
         let mut fac = Factory::new();
         fac.set_id(5);
         fac.set_name("foo".to_string());
-        
-        node.add_factory(fac);
 
-        node.remove_factory(5);
+        assert_eq!(Ok(()), node.add_factory(fac));
+
+        assert_eq!(Ok(()), node.remove_factory(5));
         assert!(node.factories().is_empty())
     }
     #[test]
     fn remove_factories_with_multiple_factories_removes_one() {
-                let mut node = Node::new();
+        let mut node = Node::new();
         let mut fac = Factory::new();
         let mut fac2 = Factory::new();
         fac.set_id(5);
@@ -60,13 +56,12 @@ mod test {
 
         fac2.set_id(4);
         fac2.set_name("bar".to_string());
-        
-        node.add_factory(fac);
-        node.add_factory(fac2);
 
-        node.remove_factory(5);
-        
-        
+        assert_eq!(Ok(()), node.add_factory(fac));
+        assert_eq!(Ok(()), node.add_factory(fac2));
+
+        assert_eq!(Ok(()), node.remove_factory(5));
+
         assert_eq!(node.factories().len(), 1);
     }
 }

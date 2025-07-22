@@ -1,9 +1,8 @@
-
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
 
-    use crate::command_line_interface::{argument_flag::ArgumentFlag, command_struct::Command};
+    use crate::command_parsing::{command_struct::Command, command_token::CommandToken};
 
     #[test]
     fn default_values_and_getters() {
@@ -21,8 +20,20 @@ mod tests {
     fn arg_setter() {
         let mut cmd = Command::new();
         let mut hash_map = HashMap::new();
-        hash_map.insert("foo".to_string(), vec![ArgumentFlag::BooleanTrue, ArgumentFlag::Value("bar".to_string())]);
+        hash_map.insert(
+            "foo".to_string(),
+            vec![
+                CommandToken::BooleanTrue,
+                CommandToken::Value("bar".to_string()),
+            ],
+        );
         cmd.set_args(hash_map);
-        assert_eq!(cmd.args().get("foo"), Some(&vec![ArgumentFlag::BooleanTrue, ArgumentFlag::Value("bar".to_string())]))
+        assert_eq!(
+            cmd.args().get("foo"),
+            Some(&vec![
+                CommandToken::BooleanTrue,
+                CommandToken::Value("bar".to_string())
+            ])
+        )
     }
 }

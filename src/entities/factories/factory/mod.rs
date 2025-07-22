@@ -1,5 +1,3 @@
-
-
 use crate::{
     entities::{
         entity_components::{assembler::assembler::Assembler, inventory::Inventory},
@@ -7,11 +5,11 @@ use crate::{
     },
     item_utils::transport_order::transport_order::TransportOrder,
 };
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Factory {
     assembler: Assembler,
     id: u64,
-    name: String
+    name: String,
 }
 
 impl Factory {
@@ -19,7 +17,7 @@ impl Factory {
         Factory {
             assembler: Assembler::new(),
             id: 0,
-            name: "default".to_string()
+            name: "".to_string(),
         }
     }
     pub fn move_items_from_output_to(&mut self, tar_inv: &mut Inventory, t_order: TransportOrder) {

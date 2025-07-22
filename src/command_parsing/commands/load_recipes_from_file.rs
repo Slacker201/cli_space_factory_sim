@@ -3,7 +3,7 @@ use std::{collections::HashMap, fs::File, io::Read};
 use bincode::config::{self};
 
 use crate::{
-    command_line_interface::{self, command_struct::Command},
+    command_parsing::{self, command_struct::Command},
     error, info,
     item_utils::recipe::recipe::Recipe,
 };
@@ -15,11 +15,11 @@ pub fn load_recipes_cmd(cmd: Command, recipes: &mut HashMap<String, Recipe>) {
         Some(loc) => {
             let location = match loc.first() {
                 Some(location) => match location {
-                    command_line_interface::argument_flag::ArgumentFlag::BooleanTrue => {
+                    command_parsing::command_token::CommandToken::BooleanTrue => {
                         error!("Value was a boolean flag");
                         return;
                     }
-                    command_line_interface::argument_flag::ArgumentFlag::Value(var) => var,
+                    command_parsing::command_token::CommandToken::Value(var) => var,
                 },
                 None => {
                     error!("Location has no value");

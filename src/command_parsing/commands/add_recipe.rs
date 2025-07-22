@@ -1,7 +1,10 @@
 use std::collections::HashMap;
 
 use crate::{
-    command_line_interface::{command_struct::Command, commands::command_utils::get_single_arg},
+    command_parsing::{
+        command_struct::Command,
+        commands::{command_error::CommandError, command_utils::get_single_arg},
+    },
     error, info,
     item_utils::{
         item::{item::Item, item_builder::ItemBuilder},
@@ -11,20 +14,23 @@ use crate::{
 };
 
 /// This adds a recipe to the recipe vector if it has the correct arguments. Otherwise it fails
-pub fn add_recipe_cmd(cmd: Command, recipes: &mut HashMap<String, Recipe>) {
+pub fn add_recipe_cmd(
+    cmd: Command,
+    recipes: &mut HashMap<String, Recipe>,
+) -> Result<(), CommandError> {
     info!(": [add_recipe] Adding recipe");
     let input_items = match get_item_args("input_item", &cmd) {
         Some(items) => items,
         None => {
             error!("No input item arguments found");
-            return;
+            return Err(CommandError::MissingArgument("input_item".to_string()));
         }
     };
     let output_items = match get_item_args("output_item", &cmd) {
         Some(items) => items,
         None => {
             error!("No output item arguments found");
-            return;
+            return Err(CommandError::MissingArgument("output_item".to_string()));
         }
     };
 
@@ -32,13 +38,11 @@ pub fn add_recipe_cmd(cmd: Command, recipes: &mut HashMap<String, Recipe>) {
         Some(str) => match str.parse::<u32>() {
             Ok(val) => val,
             Err(e) => {
-                error!("Could not parse {}, error was {}", str, e);
-                return;
+                return Err(CommandError::CommandParseIntError(e));
             }
         },
         None => {
-            error!("Argument processing1 time not found");
-            return;
+            return Err(CommandError::MissingArgument("processing_time".to_string()));
         }
     };
 
@@ -46,33 +50,28 @@ pub fn add_recipe_cmd(cmd: Command, recipes: &mut HashMap<String, Recipe>) {
         Some(str) => match str.parse::<u32>() {
             Ok(val) => val,
             Err(e) => {
-                error!("Could not parse {}, error was {}", str, e);
-                return;
+                return Err(CommandError::CommandParseIntError(e));
             }
         },
         None => {
-            error!("Argument heat produced not found");
-            return;
+            return Err(CommandError::MissingArgument("heat_produced".to_string()));
         }
     };
     let power_draw = match get_single_arg("power_draw", &cmd) {
         Some(str) => match str.parse::<u32>() {
             Ok(val) => val,
             Err(e) => {
-                error!("Could not parse {}, error was {}", str, e);
-                return;
+                return Err(CommandError::CommandParseIntError(e));
             }
         },
         None => {
-            error!("Argument power draw not found");
-            return;
+            return Err(CommandError::MissingArgument("power_draw".to_string()));
         }
     };
     let name = match get_single_arg("name", &cmd) {
         Some(str) => str.replace("^", " "),
         None => {
-            error!("Argument name not found");
-            return;
+            return Err(CommandError::MissingArgument("name".to_string()));
         }
     };
     let mut recipe = Recipe::new();
@@ -84,6 +83,7 @@ pub fn add_recipe_cmd(cmd: Command, recipes: &mut HashMap<String, Recipe>) {
     recipe.set_power_draw(power_draw);
     info!("{:?}", recipe);
     recipes.insert(name, recipe);
+    Ok(())
 }
 
 /// This returns an option for vector holding items. The items are found by parsing a given argument
@@ -93,12 +93,12 @@ fn get_item_args(argument_name: &str, cmd: &Command) -> Option<Vec<Item>> {
         Some(argument_list) => {
             for arg in argument_list {
                 match arg {
-                    crate::command_line_interface::argument_flag::ArgumentFlag::BooleanTrue => {
+                    crate::command_parsing::command_token::CommandToken::BooleanTrue => {
                         warn!(
                             "The argument value given is not an item. The correct format is id:count"
                         );
                     }
-                    crate::command_line_interface::argument_flag::ArgumentFlag::Value(
+                    crate::command_parsing::command_token::CommandToken::Value(
                         id_count_amalgamation,
                     ) => {
                         let arg_parts: Vec<&str> = id_count_amalgamation.split(':').collect();

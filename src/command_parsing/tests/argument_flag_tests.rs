@@ -1,13 +1,13 @@
 #[cfg(test)]
 mod tests {
-    use crate::command_line_interface::argument_flag::ArgumentFlag;
+    use crate::command_parsing::command_token::CommandToken;
 
     #[test]
     fn display() {
         // Arrange
-        let boolean_flag = ArgumentFlag::BooleanTrue;
-        let value_flag = ArgumentFlag::Value("Foo".to_string());
-        let value_flag_empty = ArgumentFlag::Value("".to_string());
+        let boolean_flag = CommandToken::BooleanTrue;
+        let value_flag = CommandToken::Value("Foo".to_string());
+        let value_flag_empty = CommandToken::Value("".to_string());
 
         // Act
 

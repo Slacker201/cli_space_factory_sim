@@ -1,9 +1,14 @@
-use std::{collections::{btree_map::Values, HashMap}, fmt::{self, Display, Formatter}};
+use std::collections::HashMap;
 
-use crate::{entities::factories::factory::Factory, info, warn};
-use thiserror::Error;
+use crate::{
+    entities::{
+        factories::factory::Factory,
+        node::node_error::{NodeFactoryAddError, NodeRemoveFactoryError},
+    },
+    info, warn,
+};
+pub mod node_error;
 pub mod tests;
-
 
 /// Represents a node with a factory hashmap, a name to id map, and a factory limit
 pub struct Node {
@@ -12,132 +17,142 @@ pub struct Node {
     /// The name to id converter
     name_to_id_map: HashMap<String, u64>,
     /// The amount of factories the node can hold
-    factory_limit: usize
+    factory_limit: usize,
 }
 
 impl Node {
     /// The new constructer. Returns a new node with a max factory limit of 5
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// A new node object with factory_limit set to 5
-    /// 
+    ///
     pub fn new() -> Node {
-        Node { factories: HashMap::new(), name_to_id_map: HashMap::new(), factory_limit: 5 }
+        Node {
+            factories: HashMap::new(),
+            name_to_id_map: HashMap::new(),
+            factory_limit: 5,
+        }
     }
     /// Adds a factory, and returns the factory if it cannot add it.
-    /// 
+    ///
     /// # Arguments
     /// * fac - The factory that will be added
     ///
     /// # Returns
-    /// 
+    ///
     /// None if the factory is added, and the factory if it is not added because the id already exists, the name already exists, or the node contains too many factories
-    /// 
+    ///
     pub fn add_factory(&mut self, fac: Factory) -> Result<(), NodeFactoryAddError> {
-        info!("Factory current len and limit: {} {}", self.factories.len(), self.factory_limit);
+        info!(
+            "Factory current len and limit: {} {}",
+            self.factories.len(),
+            self.factory_limit
+        );
         if self.factories.len() >= self.factory_limit {
-            return Err(NodeFactoryAddError::LimitReached(fac))
+            return Err(NodeFactoryAddError::LimitReachedWithFactory(fac));
         }
         if self.factories.contains_key(&fac.id()) {
             warn!("Duplicate Ids: {}", fac.id());
-            return Err(NodeFactoryAddError::FactoryAddDuplicateId((fac.id(), fac)))
+            return Err(NodeFactoryAddError::DuplicateIdWithFactory((fac.id(), fac)));
         }
-        if self.name_to_id_map.contains_key(fac.name()) {
+        if fac.name() != "" && self.name_to_id_map.contains_key(fac.name()) {
             warn!("Duplicate Names: {}", fac.name());
-            return Err(NodeFactoryAddError::FactoryAddDuplicateName((fac.name().to_string(), fac)))
+            return Err(NodeFactoryAddError::DuplicateNameWithFactory((
+                fac.name().to_string(),
+                fac,
+            )));
         }
-        self.name_to_id_map.insert(normalize_name_str(&fac.name()), fac.id());
+        self.name_to_id_map
+            .insert(normalize_name_str(&fac.name()), fac.id());
         self.factories.insert(fac.id(), fac);
         Ok(())
     }
     /// Immutable getter for factories
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// A reference to the hashmap containing the factories
-    /// 
+    ///
     pub fn factories(&self) -> &HashMap<u64, Factory> {
         &self.factories
     }
     /// Mutable getter for the factories
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// A mutable reference to the hashmap containing the factories
-    /// 
+    ///
     pub fn factories_mut(&mut self) -> &mut HashMap<u64, Factory> {
         &mut self.factories
     }
     /// Clears the factories hashmap and the name to id map
-    /// 
+    ///
     pub fn clear_factories(&mut self) {
         self.factories.clear();
         self.name_to_id_map.clear();
     }
     /// Returns if there is a factory with the given name
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// - "name" - The name of the factory you are trying to find
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// True or false, depending if the factory exists
-    /// 
+    ///
     pub fn contains_factory_with_name(&self, name: &String) -> bool {
         self.name_to_id_map.contains_key(&normalize_name_str(name))
     }
     /// Returns if there is a factory with the given id
     /// # Arguments
-    /// 
+    ///
     ///  * id - The id of the factory you are trying to find
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// True or false, depending if the factory exists
-    /// 
+    ///
     pub fn contains_factory(&self, id: u64) -> bool {
         self.factories.contains_key(&id)
     }
     /// Converts a name to an option for a factory id
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * name - The name of the factory you are getting the id of. This is trimmed and set to lowercase before use
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// Some(id) if the factory exists, or None if it does not
-    /// 
+    ///
     pub fn name_to_id(&self, name: &String) -> Option<u64> {
         self.name_to_id_map.get(&normalize_name_str(name)).copied()
     }
     /// Removes a factory from the factory hashmap
-    /// 
+    ///
     /// # Arguments
     /// * id - The id of the factory you want to remove
-    pub fn remove_factory(&mut self, id: u64) -> Result<(), NodeError>{
+    pub fn remove_factory(&mut self, id: u64) -> Result<(), NodeRemoveFactoryError> {
         match self.factories.remove(&id) {
             Some(fac) => {
                 self.name_to_id_map.remove(fac.name());
                 Ok(())
-            },
-            None => {
-                Err(NodeError::FactoryDoesNotExist(id))
-            },
+            }
+            None => Err(NodeRemoveFactoryError::FactoryDoesNotExist(id)),
         }
     }
     /// Returns an option for a factory reference
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * id - The factory id you are trying to get
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// None if the factory doesn't exist, and Some(&factory) if it does
-    /// 
+    ///
     pub fn get_factory(&self, id: u64) -> Option<&Factory> {
         self.factories.get(&id)
     }
@@ -145,52 +160,4 @@ impl Node {
 
 fn normalize_name_str(name: &str) -> String {
     name.to_lowercase().trim().to_string()
-}
-
-#[derive(Debug, Error)]
-pub enum NodeError {
-    FactoryAddDuplicateId((u64, Factory)),
-    FactoryAddDuplicateName((String, Factory)),
-    FactoryDoesNotExist(u64)
-}
-
-impl Display for NodeError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{}",
-            match self {
-                NodeError::FactoryAddDuplicateId(val)=>{format!("FactoryAddDuplicateId: {}",val)}
-                NodeError::FactoryAddDuplicateName(val)=>{format!("FactoryAddDuplicateName: {}",val)}
-                NodeError::FactoryDoesNotExist(val) => {format!("FactoryDoesNotExist: {}", val)},
-            }
-        )
-    }
-}
-
-#[derive(Debug, Error)]
-pub enum NodeFactoryAddError {
-    FactoryAddDuplicateId((u64, Factory)),
-    FactoryAddDuplicateName((String, Factory)),
-    LimitReached(Factory)
-}
-
-impl Display for NodeFactoryAddError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{}",
-            match self {
-                NodeFactoryAddError::FactoryAddDuplicateId(fac) => {
-                    format!("DuplicateFactoryId: Id is {}", fac.0)
-                },
-                NodeFactoryAddError::FactoryAddDuplicateName(fac) => {
-                    format!("DuplicateFactoryName: Id is {}", fac.0)
-                },
-                NodeFactoryAddError::LimitReached(_fac) => {
-                    format!("Node contains too many items")
-                },
-            }
-        )
-    }
 }

@@ -1,7 +1,4 @@
-use crate::{command_line_interface::command_struct::Command, error};
-
-
-
+use crate::{command_parsing::command_struct::Command, error};
 
 /// This returns the last argument for a given argument name, or nothing if its not found
 pub fn get_single_arg(argument_name: &str, cmd: &Command) -> Option<String> {

@@ -3,7 +3,9 @@ use std::io;
 use crate::{
     entities::{
         entity_components::inventory::Inventory,
-        factories::{entity_base::entity_base::EntityBase, factory::Factory}, node::Node, world::World,
+        factories::{entity_base::entity_base::EntityBase, factory::Factory},
+        node::Node,
+        world::World,
     },
     item_utils::{
         item::item_builder::ItemBuilder, recipe::recipe::Recipe,
@@ -12,12 +14,15 @@ use crate::{
     logging::logger::{self, LoggingLevels::*},
 };
 
-mod command_line_interface;
+mod command_parsing;
 mod data_handling;
 mod entities;
 mod item_utils;
 mod logging;
 pub fn main() {
+    run();
+}
+fn run() {
     logger::set_params(vec![Info(true), Warn(true), Error(true)]);
     info!("Testing");
     warn!("HELP ME");
@@ -34,16 +39,19 @@ pub fn main() {
         if input.trim() == "exit" {
             break;
         } else {
-            command_line_interface::command_dispatcher::parse_and_dispatch_command(
-                &input,
-                &mut world,
-            );
+            let reslt =
+                command_parsing::command_dispatcher::parse_and_dispatch_command(&input, &mut world);
+            match reslt {
+                Ok(()) => {}
+                Err(e) => {
+                    error!("{}", e)
+                }
+            }
         }
     }
 
     compiler_tickles();
 }
-
 fn compiler_tickles() {
     let world = World::new();
     let mut fac = Factory::new();
@@ -52,7 +60,7 @@ fn compiler_tickles() {
     let mut rec = Recipe::new();
     let mut node = Node::new();
     let t_order2 = TransportOrder::new();
-    node.add_factory(fac.clone());
+    let _ = node.add_factory(fac.clone());
     let i_b = ItemBuilder::new().set_count(1).set_id(1);
     let i_b2 = ItemBuilder::new().set_count(1).set_id(1);
     let i_b3 = ItemBuilder::new().set_count(1).set_id(1);
