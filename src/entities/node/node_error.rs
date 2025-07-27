@@ -40,6 +40,7 @@ impl Display for NodeFactoryAddError {
 }
 
 #[derive(Debug, Error, PartialEq)]
+#[allow(dead_code)]
 pub enum NodeRemoveFactoryError {
     FactoryDoesNotExist(u64),
 }

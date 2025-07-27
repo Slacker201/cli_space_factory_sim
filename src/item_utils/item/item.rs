@@ -45,6 +45,12 @@ impl Item {
     pub fn set_count(&mut self, count: u128) {
         self.count = count;
     }
+    pub fn weight(&self) -> u128 {
+        self.count
+    }
+    pub fn weight_per_item(&self) -> u128 {
+        1
+    }
     /// Getter for the item name
     pub fn name(&self) -> Option<&str> {
         ITEM_NAMES.get(self.id as usize).copied()

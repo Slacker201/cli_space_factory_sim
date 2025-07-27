@@ -1,17 +1,15 @@
 use std::collections::HashMap;
 
-use crate::{
-    entities::{
-        factories::factory::Factory,
-        node::node_error::{NodeFactoryAddError, NodeRemoveFactoryError},
-    },
-    info, warn,
+use crate::entities::{
+    factories::factory::Factory,
+    node::node_error::{NodeFactoryAddError, NodeRemoveFactoryError},
 };
 pub mod node_error;
 pub mod tests;
 
 /// Represents a node with a factory hashmap, a name to id map, and a factory limit
 pub struct Node {
+    id: u64,
     /// The factories the node is storing
     factories: HashMap<u64, Factory>,
     /// The name to id converter
@@ -20,6 +18,7 @@ pub struct Node {
     factory_limit: usize,
 }
 
+#[allow(dead_code)]
 impl Node {
     /// The new constructer. Returns a new node with a max factory limit of 5
     ///
@@ -29,6 +28,7 @@ impl Node {
     ///
     pub fn new() -> Node {
         Node {
+            id: 0,
             factories: HashMap::new(),
             name_to_id_map: HashMap::new(),
             factory_limit: 5,
@@ -44,30 +44,29 @@ impl Node {
     /// None if the factory is added, and the factory if it is not added because the id already exists, the name already exists, or the node contains too many factories
     ///
     pub fn add_factory(&mut self, fac: Factory) -> Result<(), NodeFactoryAddError> {
-        info!(
-            "Factory current len and limit: {} {}",
-            self.factories.len(),
-            self.factory_limit
-        );
         if self.factories.len() >= self.factory_limit {
             return Err(NodeFactoryAddError::LimitReachedWithFactory(fac));
         }
-        if self.factories.contains_key(&fac.id()) {
-            warn!("Duplicate Ids: {}", fac.id());
-            return Err(NodeFactoryAddError::DuplicateIdWithFactory((fac.id(), fac)));
+
+        let id = fac.id();
+        if self.factories.contains_key(&id) {
+            return Err(NodeFactoryAddError::DuplicateIdWithFactory((id, fac)));
         }
-        if fac.name() != "" && self.name_to_id_map.contains_key(fac.name()) {
-            warn!("Duplicate Names: {}", fac.name());
-            return Err(NodeFactoryAddError::DuplicateNameWithFactory((
-                fac.name().to_string(),
-                fac,
-            )));
+
+        if let Some(name) = fac.name() {
+            if self.name_to_id_map.contains_key(name) {
+                return Err(NodeFactoryAddError::DuplicateNameWithFactory((
+                    name.to_string(),
+                    fac,
+                )));
+            }
+            self.name_to_id_map.insert(normalize_name_str(name), id);
         }
-        self.name_to_id_map
-            .insert(normalize_name_str(&fac.name()), fac.id());
-        self.factories.insert(fac.id(), fac);
+
+        self.factories.insert(id, fac);
         Ok(())
     }
+
     /// Immutable getter for factories
     ///
     /// # Returns
@@ -137,7 +136,9 @@ impl Node {
     pub fn remove_factory(&mut self, id: u64) -> Result<(), NodeRemoveFactoryError> {
         match self.factories.remove(&id) {
             Some(fac) => {
-                self.name_to_id_map.remove(fac.name());
+                if let Some(name) = fac.name() {
+                    self.name_to_id_map.remove(name);
+                }
                 Ok(())
             }
             None => Err(NodeRemoveFactoryError::FactoryDoesNotExist(id)),
@@ -155,6 +156,12 @@ impl Node {
     ///
     pub fn get_factory(&self, id: u64) -> Option<&Factory> {
         self.factories.get(&id)
+    }
+    pub fn id(&self) -> u64 {
+        self.id
+    }
+    pub fn set_id(&mut self, new_id: u64) {
+        self.id = new_id;
     }
 }
 

@@ -2,10 +2,19 @@ pub mod tests;
 
 use std::collections::HashMap;
 
-use crate::item_utils::{
-    item::{item::Item, item_builder::ItemBuilder},
-    transport_order::transport_order::TransportOrder,
+use crate::{
+    entities::entity_components::inventory::{
+        errors::InventoryTransportError,
+        strong_types::{AddItem, RemoveItem},
+    },
+    item_utils::{
+        item::{item::Item, item_builder::ItemBuilder},
+        transport_order::transport_order::TransportOrder,
+    },
 };
+
+pub mod errors;
+pub mod strong_types;
 
 #[derive(Debug, PartialEq, Clone)]
 /// Represents an inventory that holds items. Used by objects to manage their item collections.
@@ -39,24 +48,24 @@ impl Inventory {
         self.max_capacity
     }
     /// Adds an item to the hashmap, adding to the item count if the item is already in the map
-    /// Currently does not respect max capacity.
-    pub fn add(&mut self, item_to_add: Item) -> (bool, Option<Item>) {
-        let id = item_to_add.id();
+    pub fn add(&mut self, item: Item) -> Result<(), InventoryTransportError> {
         self.items_changed = true;
-        match self.items.get_mut(&id) {
-            Some(item_in_inventory) => {
-                item_in_inventory.set_count(
-                    item_in_inventory
-                        .count()
-                        .saturating_add(item_to_add.count()),
-                );
-                (true, None)
+        let item_add2 = match self.added_items_are_too_heavy(&item) {
+            PartialItemAdd::No => {
+                println!("The items fit");
+                item
             }
-            None => {
-                self.items.insert(id, item_to_add);
-                (false, None)
-            }
-        }
+            PartialItemAdd::Yes(item) => item.0.inner(),
+        };
+        let entry = self.items.entry(item_add2.id()).or_insert(
+            ItemBuilder::new()
+                .set_id(item_add2.id())
+                .set_count(0)
+                .build(),
+        );
+        entry.set_count(entry.count() + item_add2.count());
+        println!("Entry: {:?}", entry);
+        Ok(())
     }
     /// returns an optional reference to the item corresponding to the id
     pub fn get(&self, id: u64) -> Option<&Item> {
@@ -69,18 +78,22 @@ impl Inventory {
     }
     /// Returns the capacity
     pub fn capacity(&mut self) -> u128 {
+        println!("{:?}", self.items());
         if self.items_changed {
-            let mut mass_count = 0u128;
-            for item in &self.items {
-                mass_count += item.1.count();
-            }
-            self.capacity = mass_count;
+            self.cal_capacity();
         }
-        self.items_changed = false;
         self.capacity
+    }
+    pub fn cal_capacity(&mut self) {
+        let mut mass_count = 0u128;
+        for item in &self.items {
+            mass_count += item.1.weight();
+        }
+        self.capacity = mass_count;
     }
     /// Removes an item from the inventory and returns it if found
     pub fn remove(&mut self, item: &Item) -> Option<Item> {
+        self.items_changed = true;
         let found = self.get_mut(item.id())?;
 
         if found.count() > item.count() {
@@ -95,10 +108,12 @@ impl Inventory {
 
     /// Removes an item by id, and returns it if found
     pub fn remove_by_id(&mut self, id: u64) -> Option<Item> {
+        self.items_changed = true;
         self.items.remove(&id)
     }
     /// Removes a specific amount of item, according to the provided id and count
     pub fn remove_by_id_and_count(&mut self, id: u64, count: u128) -> Option<Item> {
+        self.items_changed = true;
         match self.get_mut(id) {
             Some(var) if var.count() > count => {
                 var.set_count(var.count() - count);
@@ -123,11 +138,12 @@ impl Inventory {
     }
     /// Returns a vector of mutable references to all items in the inventory
     pub fn get_all_mut(&mut self) -> Vec<&mut Item> {
+        self.items_changed = true;
         self.items.values_mut().collect()
     }
-
     /// Moves items from itself into another inventory according to a transport order
     pub fn move_items_to(&mut self, t_order: TransportOrder, tar_inv: &mut Inventory) {
+        self.items_changed = true;
         for item in t_order.items() {
             // Check if the source inventory contains the item
             match self.get_mut(item.id()) {
@@ -137,7 +153,7 @@ impl Inventory {
 
                     // Attempt to remove the specified count of the item from source inventory
                     if let Some(removed_item) = self.remove_by_id_and_count(item_id, item_count) {
-                        tar_inv.add(removed_item);
+                        let _ = tar_inv.add(removed_item);
                     }
                 }
                 None => {
@@ -146,11 +162,10 @@ impl Inventory {
             }
         }
     }
-
     /// Adds multiple items to the inventory
     pub fn add_multiple(&mut self, items: Vec<Item>) {
         for item in items {
-            self.add(item);
+            let _ = self.add(item);
         }
     }
 
@@ -160,6 +175,38 @@ impl Inventory {
     }
     /// Clears the inventory of all items
     pub fn clear(&mut self) {
+        self.items_changed = true;
         self.items.clear();
     }
+    /// NEEDS DOCUMENTATION TODO
+    fn added_items_are_too_heavy(&mut self, item: &Item) -> PartialItemAdd {
+        if self.capacity() + item.weight() > self.max_capacity() {
+            // Calculate how many items we need to return
+            let extra_weight = (self.capacity() + item.weight()) - self.max_capacity();
+            println!("How much extra weight we have: {}", extra_weight);
+            let weight_to_add = self.max_capacity() - self.capacity();
+            println!("Weight to add: {}", weight_to_add);
+            let items_to_add = weight_to_add / item.weight_per_item();
+            let items_to_return = extra_weight / item.weight_per_item();
+            println!("Items_to_add: {}", items_to_add);
+            let item_to_add = ItemBuilder::new()
+                .set_count(items_to_add)
+                .set_id(item.id())
+                .build();
+            let item_to_return = ItemBuilder::new()
+                .set_count(items_to_return)
+                .set_id(item.id())
+                .build();
+            return PartialItemAdd::Yes((
+                AddItem::Item(item_to_add),
+                RemoveItem::Item(item_to_return),
+            ));
+        }
+        PartialItemAdd::No
+    }
+}
+
+enum PartialItemAdd {
+    No,
+    Yes((AddItem, RemoveItem)),
 }

@@ -1,28 +1,33 @@
+#![allow(dead_code)]
+
 use std::collections::HashMap;
 
 use crate::{entities::node::Node, item_utils::recipe::recipe::Recipe};
 
 pub struct World {
-    _player_recipes: HashMap<String, Recipe>,
+    player_recipes: HashMap<String, Recipe>,
     all_recipes: HashMap<String, Recipe>,
-    node: Node,
+    nodes: HashMap<u64, Node>,
 }
 
 impl World {
     pub fn new() -> World {
         World {
-            _player_recipes: HashMap::new(),
+            player_recipes: HashMap::new(),
             all_recipes: HashMap::new(),
-            node: Node::new(),
+            nodes: HashMap::new(),
         }
     }
     pub fn all_recipes_mut(&mut self) -> &mut HashMap<String, Recipe> {
         &mut self.all_recipes
     }
-    pub fn node(&self) -> &Node {
-        &self.node
+    pub fn nodes(&self) -> &HashMap<u64, Node> {
+        &self.nodes
     }
-    pub fn node_mut(&mut self) -> &mut Node {
-        &mut self.node
+    pub fn nodes_mut(&mut self) -> &mut HashMap<u64, Node> {
+        &mut self.nodes
+    }
+    pub fn set_nodes(&mut self, nodes: HashMap<u64, Node>) {
+        self.nodes = nodes;
     }
 }

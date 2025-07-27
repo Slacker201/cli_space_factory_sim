@@ -1,4 +1,4 @@
-use std::io;
+use std::collections::HashMap;
 
 use crate::{
     entities::{
@@ -7,16 +7,16 @@ use crate::{
         node::Node,
         world::World,
     },
+    gui::SFSGui,
     item_utils::{
         item::item_builder::ItemBuilder, recipe::recipe::Recipe,
         transport_order::transport_order::TransportOrder,
     },
     logging::logger::{self, LoggingLevels::*},
 };
-
-mod command_parsing;
 mod data_handling;
 mod entities;
+mod gui;
 mod item_utils;
 mod logging;
 pub fn main() {
@@ -28,29 +28,56 @@ fn run() {
     warn!("HELP ME");
     error!("Program died");
     println!("Enter your command. Type exit to exit program");
-    let mut world = World::new();
-    loop {
-        let mut input = String::new();
-
-        io::stdin()
-            .read_line(&mut input)
-            .expect("Failed to read line");
-
-        if input.trim() == "exit" {
-            break;
-        } else {
-            let reslt =
-                command_parsing::command_dispatcher::parse_and_dispatch_command(&input, &mut world);
-            match reslt {
-                Ok(()) => {}
-                Err(e) => {
-                    error!("{}", e)
-                }
-            }
-        }
-    }
 
     compiler_tickles();
+    let options = eframe::NativeOptions::default();
+    let mut app = SFSGui::default();
+    let mut world = World::new();
+    let mut node = Node::new();
+    let mut fac = Factory::new();
+    fac.set_id(16);
+    fac.set_name("Le Bobbert".to_owned());
+    let mut recipe = Recipe::new();
+    let mut vec = Vec::new();
+    for i in 0..200 {
+        vec.push(ItemBuilder::new().set_count(5).set_id(i).build());
+    }
+    recipe.set_input_items(vec);
+    let _ = fac
+        .get_assembler_mut()
+        .input_inventory_mut()
+        .add(ItemBuilder::new().set_count(5).set_id(1).build());
+    let _ = fac
+        .get_assembler_mut()
+        .input_inventory_mut()
+        .add(ItemBuilder::new().set_count(5).set_id(2).build());
+    let _ = fac
+        .get_assembler_mut()
+        .output_inventory_mut()
+        .add(ItemBuilder::new().set_count(5).set_id(1).build());
+    let _ = fac
+        .get_assembler_mut()
+        .output_inventory_mut()
+        .add(ItemBuilder::new().set_count(5).set_id(2).build());
+    fac.get_assembler_mut().set_recipe(recipe);
+    let _ = node.add_factory(Factory::new());
+    let _ = node.add_factory(fac.clone());
+    let mut map = HashMap::new();
+    map.insert(node.id(), node);
+
+    let mut node = Node::new();
+    node.set_id(1);
+    let _ = node.add_factory(Factory::new());
+    let _ = node.add_factory(fac);
+    map.insert(node.id(), node);
+    world.set_nodes(map);
+    app.set_world(world);
+    let e = eframe::run_native(
+        "Space Logistical Simulator",
+        options,
+        Box::new(|_cc| Ok(Box::new(app))),
+    );
+    println!("{:?}", e)
 }
 fn compiler_tickles() {
     let world = World::new();
@@ -67,7 +94,7 @@ fn compiler_tickles() {
     let i_b4 = ItemBuilder::new().set_count(1).set_id(1);
     let i_b5 = ItemBuilder::new().set_count(1).set_id(1);
     let assembler = fac.get_assembler_mut();
-    world.node();
+    world.nodes();
     node.factories();
     node.factories_mut();
     node.clear_factories();

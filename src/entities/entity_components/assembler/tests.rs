@@ -25,7 +25,7 @@ mod tests {
         let mut assembler = Assembler::new();
 
         // Act
-        inv.add(ItemBuilder::new().set_count(1).set_id(1).build());
+        let _ = inv.add(ItemBuilder::new().set_count(1).set_id(1).build());
         assembler.set_input_inventory(inv.clone());
 
         // Assert
@@ -38,7 +38,7 @@ mod tests {
         let mut assembler = Assembler::new();
 
         // Act
-        inv.add(ItemBuilder::new().set_count(1).set_id(1).build());
+        let _ = inv.add(ItemBuilder::new().set_count(1).set_id(1).build());
         assembler.set_output_inventory(inv.clone());
 
         // Assert
@@ -52,7 +52,7 @@ mod tests {
         let mut assembler = Assembler::new();
 
         // Act
-        inv.add(ItemBuilder::new().set_count(1).set_id(1).build());
+        let _ = inv.add(ItemBuilder::new().set_count(1).set_id(1).build());
         assembler.set_processing_inventory(inv.clone());
 
         // Assert
@@ -122,7 +122,7 @@ mod tests {
             .build()]));
         rec.set_processing_time(20);
         assembler.set_recipe(rec);
-        assembler
+        let _ = assembler
             .input_inventory_mut()
             .add(ItemBuilder::new().set_count(200).set_id(1).build());
         assembler.tick();
@@ -164,7 +164,7 @@ mod tests {
             .build()]));
         rec.set_processing_time(1);
         assembler.set_recipe(rec);
-        assembler
+        let _ = assembler
             .input_inventory_mut()
             .add(ItemBuilder::new().set_count(200).set_id(1).build());
         assembler.tick();
@@ -193,7 +193,7 @@ mod tests {
             .build()]));
         rec.set_processing_time(1);
         assembler.set_recipe(rec);
-        assembler
+        let _ = assembler
             .input_inventory_mut()
             .add(ItemBuilder::new().set_count(200).set_id(1).build());
         for _ in 0..5 {
@@ -223,7 +223,7 @@ mod tests {
             .build()]));
         rec.set_processing_time(1);
         assembler.set_recipe(rec);
-        assembler
+        let _ = assembler
             .input_inventory_mut()
             .add(ItemBuilder::new().set_count(200).set_id(1).build());
         for _ in 0..5 {
@@ -254,7 +254,7 @@ mod tests {
             .build()]));
         rec.set_processing_time(1);
         assembler.set_recipe(rec);
-        assembler
+        let _ = assembler
             .input_inventory_mut()
             .add(ItemBuilder::new().set_count(5).set_id(1).build());
         for _ in 0..5 {
@@ -282,7 +282,7 @@ mod tests {
             .build()]));
         rec.set_processing_time(1);
         assembler.set_recipe(rec);
-        assembler
+        let _ = assembler
             .input_inventory_mut()
             .add(ItemBuilder::new().set_count(4).set_id(1).build());
         assembler.tick();
@@ -308,7 +308,7 @@ mod tests {
             .build()]));
         rec.set_processing_time(0);
         assembler.set_recipe(rec);
-        assembler
+        let _ = assembler
             .input_inventory_mut()
             .add(ItemBuilder::new().set_count(20).set_id(1).build());
         assembler.tick();
@@ -336,7 +336,7 @@ mod tests {
             .build()]));
         rec.set_processing_time(1);
         assembler.set_recipe(rec);
-        assembler
+        let _ = assembler
             .input_inventory_mut()
             .add(ItemBuilder::new().set_count(4).set_id(1).build());
         assembler.tick();
@@ -365,7 +365,7 @@ mod tests {
             .build()]));
         rec.set_processing_time(1);
         assembler.set_recipe(rec);
-        assembler
+        let _ = assembler
             .input_inventory_mut()
             .add(ItemBuilder::new().set_count(5).set_id(1).build());
         assembler.tick();

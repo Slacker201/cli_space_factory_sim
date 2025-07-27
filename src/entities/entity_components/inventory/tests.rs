@@ -3,7 +3,7 @@ mod tests {
     use std::collections::HashMap;
 
     use crate::{
-        entities::entity_components::inventory::Inventory,
+        entities::entity_components::inventory::{Inventory, errors::InventoryTransportError},
         item_utils::item::{item::Item, item_builder::ItemBuilder},
     };
 
@@ -25,25 +25,15 @@ mod tests {
     fn add_item_add() {
         let mut inv = Inventory::new();
         assert_eq!(
-            false,
-            inv.add(ItemBuilder::new().set_count(1).set_id(1).build()).0
-        );
-    }
-
-    #[test]
-    fn add_item_merge() {
-        let mut inv = Inventory::new();
-        inv.add(ItemBuilder::new().set_count(1).set_id(1).build());
-        assert_eq!(
-            true,
-            inv.add(ItemBuilder::new().set_count(1).set_id(1).build()).0
+            Ok(()),
+            inv.add(ItemBuilder::new().set_count(1).set_id(1).build())
         );
     }
 
     #[test]
     fn add_item_correct_values() {
         let mut inv = Inventory::new();
-        inv.add(ItemBuilder::new().set_count(1).set_id(1).build());
+        let _ = inv.add(ItemBuilder::new().set_count(1).set_id(1).build());
 
         let item = inv.get(1);
         assert!(item.is_some(), "Item not found");
@@ -56,7 +46,7 @@ mod tests {
     #[test]
     fn get_mut_mutability() {
         let mut inv = Inventory::new();
-        inv.add(ItemBuilder::new().set_count(1).set_id(1).build());
+        let _ = inv.add(ItemBuilder::new().set_count(1).set_id(1).build());
 
         let item = inv.get_mut(1).unwrap();
 
@@ -70,20 +60,72 @@ mod tests {
     #[test]
     fn add_item_capacity() {
         let mut inv = Inventory::new();
-        inv.add(ItemBuilder::new().set_count(1).set_id(1).build());
+        let _ = inv.add(ItemBuilder::new().set_count(1).set_id(1).build());
 
         assert_eq!(inv.capacity(), 1);
 
-        inv.add(ItemBuilder::new().set_count(5).set_id(2).build());
+        let _ = inv.add(ItemBuilder::new().set_count(5).set_id(2).build());
 
         assert_eq!(inv.capacity(), 6);
     }
 
     #[test]
     fn clear_inventory() {
+        // Arrange
         let mut inv = Inventory::new();
-        inv.add(ItemBuilder::new().set_count(5).set_id(1).build());
+
+        // Act
+        let _ = inv.add(ItemBuilder::new().set_count(5).set_id(1).build());
         inv.clear();
+
+        // Assert
         assert!(inv.items().is_empty())
+    }
+    #[test]
+    fn add_returns_ok_when_added_item_is_below_max_capacity() {
+        // Arrange
+        let mut inv = Inventory::new();
+
+        // Act
+        inv.set_max_capacity(20);
+        let item = ItemBuilder::new().set_count(25).set_id(1).build();
+
+        // Assert
+        assert_eq!(Ok(()), inv.add(item));
+    }
+
+    #[test]
+    fn add_returns_ok_when_added_item_is_equal_to_max_capacity() {
+        // Arrange
+        let mut inv = Inventory::new();
+
+        // Act
+        inv.set_max_capacity(20);
+        let item = ItemBuilder::new().set_count(20).set_id(1).build();
+
+        // Assert
+        assert_eq!(Ok(()), inv.add(item));
+        assert_eq!(20, inv.capacity());
+    }
+
+    #[test]
+    fn add_test() {
+        // Arrange
+        let mut inv = Inventory::new();
+
+        // Act
+        inv.set_max_capacity(20);
+        let item = ItemBuilder::new().set_count(20).set_id(1).build();
+        let item_2 = ItemBuilder::new().set_count(1).set_id(1).build();
+        println!("adding item");
+        let _ = inv.add(item);
+        println!("added item");
+        // Assert
+        assert_eq!(
+            Err(InventoryTransportError::ItemAddCapacityOverflow(
+                ItemBuilder::new().set_count(1).set_id(1).build()
+            )),
+            inv.add(item_2)
+        )
     }
 }

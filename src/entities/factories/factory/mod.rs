@@ -9,7 +9,7 @@ use crate::{
 pub struct Factory {
     assembler: Assembler,
     id: u64,
-    name: String,
+    name: Option<String>,
 }
 
 impl Factory {
@@ -17,7 +17,7 @@ impl Factory {
         Factory {
             assembler: Assembler::new(),
             id: 0,
-            name: "".to_string(),
+            name: None,
         }
     }
     pub fn move_items_from_output_to(&mut self, tar_inv: &mut Inventory, t_order: TransportOrder) {
@@ -40,13 +40,13 @@ impl Factory {
         self.id
     }
     pub fn set_name(&mut self, new_name: String) {
-        self.name = new_name;
+        self.name = Some(new_name);
     }
     pub fn set_id(&mut self, new_id: u64) {
         self.id = new_id;
     }
-    pub fn name(&self) -> &String {
-        &self.name
+    pub fn name(&self) -> Option<&String> {
+        self.name.as_ref()
     }
 }
 

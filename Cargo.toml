@@ -12,7 +12,8 @@ strip = "symbols"
 
 [dependencies]
 bincode = "2.0.1"
-clap = "4.5.41"
-rand = "0.9.1"
+eframe = "0.32.0"
+egui = "0.32.0"
+rand = "0.9.2"
 thiserror = "2.0.12"
 
