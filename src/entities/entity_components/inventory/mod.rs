@@ -50,12 +50,12 @@ impl Inventory {
     /// Adds an item to the hashmap, adding to the item count if the item is already in the map
     pub fn add(&mut self, item: Item) -> Result<(), InventoryTransportError> {
         self.items_changed = true;
-        let item_add2 = match self.added_items_are_too_heavy(&item) {
+        let (item_add2, remove_item) = match self.added_items_are_too_heavy(&item) {
             PartialItemAdd::No => {
                 println!("The items fit");
-                item
+                (item, None)
             }
-            PartialItemAdd::Yes(item) => item.0.inner(),
+            PartialItemAdd::Yes(item) => (item.0.inner(), Some(item.1.inner())),
         };
         let entry = self.items.entry(item_add2.id()).or_insert(
             ItemBuilder::new()
@@ -65,7 +65,10 @@ impl Inventory {
         );
         entry.set_count(entry.count() + item_add2.count());
         println!("Entry: {:?}", entry);
-        Ok(())
+        match remove_item {
+            Some(item) => Err(InventoryTransportError::ItemAddCapacityOverflow(item)),
+            None => Ok(()),
+        }
     }
     /// returns an optional reference to the item corresponding to the id
     pub fn get(&self, id: u64) -> Option<&Item> {
@@ -203,6 +206,9 @@ impl Inventory {
             ));
         }
         PartialItemAdd::No
+    }
+    pub fn items_mut(&mut self) -> &mut HashMap<u64, Item> {
+        &mut self.items
     }
 }
 

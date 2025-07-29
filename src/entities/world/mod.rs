@@ -2,7 +2,13 @@
 
 use std::collections::HashMap;
 
-use crate::{entities::node::Node, item_utils::recipe::recipe::Recipe};
+use rayon::iter::{IntoParallelRefMutIterator, ParallelIterator};
+
+use crate::{
+    entities::node::Node, item_utils::
+        recipe::recipe::Recipe
+    
+};
 
 pub struct World {
     player_recipes: HashMap<String, Recipe>,
@@ -29,5 +35,10 @@ impl World {
     }
     pub fn set_nodes(&mut self, nodes: HashMap<u64, Node>) {
         self.nodes = nodes;
+    }
+    pub fn tick(&mut self) {
+        self.nodes_mut().par_iter_mut().for_each(|(_node_id, node)| {
+            node.tick();
+        });
     }
 }

@@ -1,13 +1,14 @@
 use std::collections::HashMap;
 
-use crate::entities::{
+use crate::{entities::{
     factories::factory::Factory,
     node::node_error::{NodeFactoryAddError, NodeRemoveFactoryError},
-};
+}, error, info};
 pub mod node_error;
 pub mod tests;
 
 /// Represents a node with a factory hashmap, a name to id map, and a factory limit
+#[derive(Clone, Debug)]
 pub struct Node {
     id: u64,
     /// The factories the node is storing
@@ -162,6 +163,18 @@ impl Node {
     }
     pub fn set_id(&mut self, new_id: u64) {
         self.id = new_id;
+    }
+    pub fn tick(&mut self) {
+        for fac in self.factories.values_mut() {
+            match fac.get_assembler_mut().input_inventory_mut().items_mut().get_mut(&1) {
+                Some(i) => {
+                    i.set_count(i.count()+1);
+                },
+                None => {
+                    error!("Missing Item");
+                },
+            }
+        }
     }
 }
 

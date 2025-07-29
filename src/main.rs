@@ -23,26 +23,33 @@ pub fn main() {
     run();
 }
 fn run() {
+    use std::sync::{Arc, RwLock};
+    use std::thread;
+    use std::time::Duration;
+
     logger::set_params(vec![Info(true), Warn(true), Error(true)]);
     info!("Testing");
     warn!("HELP ME");
     error!("Program died");
+
     println!("Enter your command. Type exit to exit program");
 
     compiler_tickles();
+
     let options = eframe::NativeOptions::default();
-    let mut app = SFSGui::default();
     let mut world = World::new();
-    let mut node = Node::new();
+
     let mut fac = Factory::new();
     fac.set_id(16);
     fac.set_name("Le Bobbert".to_owned());
+
     let mut recipe = Recipe::new();
     let mut vec = Vec::new();
     for i in 0..200 {
         vec.push(ItemBuilder::new().set_count(5).set_id(i).build());
     }
     recipe.set_input_items(vec);
+
     let _ = fac
         .get_assembler_mut()
         .input_inventory_mut()
@@ -60,25 +67,47 @@ fn run() {
         .output_inventory_mut()
         .add(ItemBuilder::new().set_count(5).set_id(2).build());
     fac.get_assembler_mut().set_recipe(recipe);
-    let _ = node.add_factory(Factory::new());
-    let _ = node.add_factory(fac.clone());
-    let mut map = HashMap::new();
-    map.insert(node.id(), node);
 
-    let mut node = Node::new();
-    node.set_id(1);
-    let _ = node.add_factory(Factory::new());
-    let _ = node.add_factory(fac);
-    map.insert(node.id(), node);
+    let mut map = HashMap::new();
+    let mut node1 = Node::new();
+    let _ = node1.add_factory(Factory::new());
+    let _ = node1.add_factory(fac.clone());
+    map.insert(node1.id(), node1);
+
+    let mut node2 = Node::new();
+    node2.set_id(1);
+    let _ = node2.add_factory(Factory::new());
+    let _ = node2.add_factory(fac);
+    map.insert(node2.id(), node2);
+
     world.set_nodes(map);
-    app.set_world(world);
-    let e = eframe::run_native(
+
+    let shared_world = Arc::new(RwLock::new(world));
+    
+
+    {
+        let world = Arc::clone(&shared_world);
+        thread::spawn(move || {
+            loop {
+                {
+                    let mut world = world.write().unwrap();
+                    // Game simulation logic here
+                    println!("Ticking");
+                    world.tick();
+                }
+                thread::sleep(Duration::from_millis(16));
+            }
+        });
+    }
+
+    let app = SFSGui::new_with_world(shared_world);
+    let _ = eframe::run_native(
         "Space Logistical Simulator",
         options,
         Box::new(|_cc| Ok(Box::new(app))),
     );
-    println!("{:?}", e)
 }
+
 fn compiler_tickles() {
     let world = World::new();
     let mut fac = Factory::new();

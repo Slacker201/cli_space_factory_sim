@@ -2,6 +2,7 @@ use crate::{
     entities::entity_components::{
         assembler::processing_state::ProcessingState, inventory::Inventory,
     },
+    info,
     item_utils::recipe::recipe::Recipe,
 };
 #[derive(Clone, Debug, PartialEq)]
@@ -100,44 +101,36 @@ impl Assembler {
     pub fn tick(&mut self) {
         match self.processing_state() {
             ProcessingState::Idle => {
-                // Check if we can produce the recipe
-                if self.recipe.can_be_produced(&self.input_inventory) {
-                    self.start_processing();
+                if self.recipe().can_be_produced(self.input_inventory()) {
+                    self.set_processing_state(ProcessingState::Processing(
+                        self.recipe.processing_time(),
+                    ));
+                    self.start_recipe();
                     if self.recipe().processing_time() <= 1 {
-                        self.end_processing();
+                        self.finish_recipe();
                     }
                 }
             }
-            ProcessingState::Processing(val) => {
-                if val + 1 >= self.recipe.processing_time() {
-                    self.end_processing();
-                    // Check again if can start next processing
-                    if self.recipe.can_be_produced(&self.input_inventory) {
-                        self.start_processing();
-                    }
-                } else {
-                    self.set_processing_state(ProcessingState::Processing(val + 1));
-                    // Skip expensive checks while still processing
+            ProcessingState::Processing(processing_time) => {
+                if processing_time.saturating_sub(1) == 0 {
+                    println!("Setting proc state to idle");
+                    self.set_processing_state(ProcessingState::Idle);
+                    self.finish_recipe();
                 }
+                self.processing_state -= 1;
             }
         }
     }
 
-    // helper for tick func
-    fn start_processing(&mut self) {
+    fn start_recipe(&mut self) {
         self.input_inventory.move_items_to(
             self.recipe.input_items_as_transport_order(),
             &mut self.processing_inventory,
         );
-        self.set_processing_state(ProcessingState::Processing(1));
     }
-
-    // another helper for tick func
-    fn end_processing(&mut self) {
-        // Finished processing
-        self.output_inventory
-            .add_multiple(self.recipe.output_items().to_vec());
+    fn finish_recipe(&mut self) {
         self.processing_inventory.clear();
-        self.set_processing_state(ProcessingState::Idle);
+        self.output_inventory
+            .add_multiple(self.recipe.output_items().into_iter().cloned().collect());
     }
 }

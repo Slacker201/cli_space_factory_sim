@@ -88,7 +88,7 @@ mod tests {
 
         // Act
         inv.set_max_capacity(20);
-        let item = ItemBuilder::new().set_count(25).set_id(1).build();
+        let item = ItemBuilder::new().set_count(19).set_id(1).build();
 
         // Assert
         assert_eq!(Ok(()), inv.add(item));
@@ -118,7 +118,7 @@ mod tests {
         let item = ItemBuilder::new().set_count(20).set_id(1).build();
         let item_2 = ItemBuilder::new().set_count(1).set_id(1).build();
         println!("adding item");
-        let _ = inv.add(item);
+        println!("Added Item: {:?}", inv.add(item));
         println!("added item");
         // Assert
         assert_eq!(

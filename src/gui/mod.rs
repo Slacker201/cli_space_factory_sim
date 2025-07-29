@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use egui::Ui;
 
 use crate::{
@@ -11,7 +13,7 @@ use crate::{
 pub mod screen_selector;
 pub struct SFSGui {
     screen_selected: ScreenSelector,
-    world: Option<World>,
+    world: Option<Arc<std::sync::RwLock<World>>>,
     selected_node: Option<u64>,
     selected_factory: Option<u64>,
     selected_inv: Option<SelectedInventory>,
@@ -116,7 +118,13 @@ impl SFSGui {
 
     fn draw_world_view(&mut self, ctx: &egui::Context) {
         let node_ids: Vec<u64> = match &self.world {
-            Some(world) => world.nodes().iter().map(|node| node.1.id()).collect(),
+            Some(world) => match world.read() {
+                Ok(world) => world.nodes().iter().map(|node| node.1.id()).collect(),
+                Err(e) => {
+                    error!("{}", e);
+                    return;
+                }
+            },
             None => {
                 error!("World not found");
                 return;
@@ -201,20 +209,39 @@ impl SFSGui {
         selected_inventory: SelectedInventory,
     ) {
         self.draw_task_bar(ctx);
-        let inv = match self.try_get_factory(node_id, factory_id) {
+        let items: Vec<Item> = match self.try_get_factory(node_id, factory_id) {
             Ok(factory) => match selected_inventory {
-                SelectedInventory::InputInventory => factory.get_assembler().input_inventory(),
-                SelectedInventory::OutputInventory => factory.get_assembler().output_inventory(),
-                SelectedInventory::ProcessingInventory => {
-                    factory.get_assembler().processing_inventory()
-                }
+                SelectedInventory::InputInventory => factory
+                    .get_assembler()
+                    .input_inventory()
+                    .clone()
+                    .items()
+                    .values()
+                    .cloned()
+                    .collect(),
+                SelectedInventory::OutputInventory => factory
+                    .get_assembler()
+                    .output_inventory()
+                    .clone()
+                    .items()
+                    .values()
+                    .cloned()
+                    .collect(),
+                SelectedInventory::ProcessingInventory => factory
+                    .get_assembler()
+                    .processing_inventory()
+                    .clone()
+                    .clone()
+                    .items()
+                    .values()
+                    .cloned()
+                    .collect(),
             },
             Err(e) => {
                 error!("{}", e);
                 return;
             }
         };
-        let items: Vec<Item> = inv.items().values().cloned().collect();
         egui::CentralPanel::default().show(ctx, |ui| {
             self.draw_item_array_in_horizontal_scroll(ui, &items);
         });
@@ -356,19 +383,28 @@ impl SFSGui {
         }
     }
 
-    fn try_get_node(&self, node_id: u64) -> Result<&Node, String> {
+    fn try_get_node(&self, node_id: u64) -> Result<Node, String> {
         match &self.world {
-            Some(world) => match world.nodes().get(&node_id) {
-                Some(node) => Ok(node),
-                None => Err("Node Not Found".to_owned()),
+            Some(world) => match &world.read() {
+                Ok(world) => match world.nodes().get(&node_id) {
+                    Some(node) => {
+                        let n = Ok(node);
+                        n.cloned()
+                    }
+                    None => Err("Node Not Found".to_owned()),
+                },
+                Err(e) => {
+                    error!("{}", e);
+                    return Err("Poisoned".to_owned());
+                }
             },
             None => Err("World Not Found".to_string()),
         }
     }
-    fn try_get_factory(&self, node_id: u64, fac_id: u64) -> Result<&Factory, String> {
+    fn try_get_factory(&self, node_id: u64, fac_id: u64) -> Result<Factory, String> {
         match self.try_get_node(node_id) {
             Ok(node) => match node.get_factory(fac_id) {
-                Some(fac) => Ok(fac),
+                Some(fac) => Ok(fac.clone()),
                 None => Err("Factory Not Found".to_owned()),
             },
             Err(e) => Err(e),
@@ -376,6 +412,16 @@ impl SFSGui {
     }
 
     pub fn set_world(&mut self, new_world: World) {
-        self.world = Some(new_world)
+        self.world = Some(Arc::from(std::sync::RwLock::from(new_world)))
+    }
+
+    pub fn new_with_world(world: Arc<std::sync::RwLock<World>>) -> SFSGui {
+        SFSGui {
+            screen_selected: ScreenSelector::World,
+            world: Some(world),
+            selected_node: None,
+            selected_factory: None,
+            selected_inv: None,
+        }
     }
 }
